@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"math/rand"
 	"os"
+	"os/user"
+	"runtime"
 	"strconv"
 	"strings"
 	"time"
@@ -24,7 +26,16 @@ func reverseArray(arr []string) []string {
 }
 
 func main() {
-	databasePath := "/home/ryan/Scripts/OkDatabase"
+	databasePath := "."
+	userObject, errorObject := user.Current()
+	if errorObject != nil {
+		panic(errorObject)
+	}
+	if runtime.GOOS == "linux" {
+		databasePath = "/home/" + userObject.Username + "/.OkDatabase"
+	} else if runtime.GOOS == "windows" {
+		databasePath = "C:/Users/" + userObject.Username + "/Documents/OkDatabase"
+	}
 
 	rand.Seed(time.Now().UnixNano())
 	currentTime := time.Now()

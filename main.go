@@ -44,6 +44,11 @@ func main() {
 		}
 	}
 	if showStatistics {
+		if len(okDatabase.Keys()) == 0 {
+			fmt.Println("No statistics...")
+			return
+		}
+
 		currentCount := 1
 		currentCountBytes, errorObject := okDatabase.Get([]byte("counter"))
 		if errorObject == nil {

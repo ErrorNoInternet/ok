@@ -42,7 +42,10 @@ func main() {
 	timeParts := strings.Split(currentTime.Format("01-02-2016"), "-")
 	currentDayInt64, _ := strconv.ParseInt(timeParts[1], 10, 0)
 	currentDay := int(currentDayInt64)
-	okDatabase, _ := bitcask.Open(databasePath)
+	okDatabase, errorObject := bitcask.Open(databasePath)
+	if errorObject != nil {
+		panic(errorObject)
+	}
 
 	arguments := os.Args[1:]
 	showStatistics := false
@@ -55,7 +58,11 @@ func main() {
 		}
 	}
 	if showStatistics {
-		if len(okDatabase.Keys()) == 0 {
+		keyCount := 0
+		for _ = range okDatabase.Keys() {
+			keyCount++
+		}
+		if keyCount == 0 {
 			fmt.Println("No statistics...")
 			return
 		}
@@ -126,8 +133,11 @@ func main() {
 			}
 			captionText += caption + dayUnit + "  "
 		}
+		graph := "Not enough data..."
 		heatmapOutput = heatmapOutput[:len(heatmapOutput)-2]
-		graph := asciigraph.Plot(numberArray, asciigraph.Width(14), asciigraph.Height(10), asciigraph.Caption(captionText))
+		if len(numberArray) > 0 {
+			graph = asciigraph.Plot(numberArray, asciigraph.Width(14), asciigraph.Height(10), asciigraph.Caption(captionText))
+		}
 		color.Printf("<fg=white;op=bold;>OK Counter:</> %v\n<fg=white;op=bold;>Records:</> %v\n<fg=white;op=bold;>Graph:</>\n%v\n", currentCount, heatmapOutput, graph)
 	} else if resetValues {
 		scanner := bufio.NewScanner(os.Stdin)

@@ -13,10 +13,10 @@ import (
 
 	"github.com/gookit/color"
 	"github.com/guptarohit/asciigraph"
-	"github.com/prologic/bitcask"
+	"github.com/peterbourgon/diskv"
 )
 
-var okDatabase *bitcask.Bitcask
+var okDatabase *diskv.Diskv
 
 func reverseArray(arr []string) []string {
 	for i, j := 0, len(arr)-1; i < j; i, j = i+1, j-1 {
@@ -42,10 +42,15 @@ func main() {
 	timeParts := strings.Split(currentTime.Format("01-02-2016"), "-")
 	currentDayInt64, _ := strconv.ParseInt(timeParts[1], 10, 0)
 	currentDay := int(currentDayInt64)
-	okDatabase, errorObject := bitcask.Open(databasePath)
-	if errorObject != nil {
-		panic(errorObject)
+
+	flatTransform := func(input string) []string {
+		return []string{}
 	}
+	okDatabase := diskv.New(diskv.Options{
+		BasePath:     databasePath,
+		Transform:    flatTransform,
+		CacheSizeMax: 1024 * 1024,
+	})
 
 	arguments := os.Args[1:]
 	showStatistics := false
@@ -59,7 +64,7 @@ func main() {
 	}
 	if showStatistics {
 		keyCount := 0
-		for _ = range okDatabase.Keys() {
+		for _ = range okDatabase.Keys(make(chan struct{})) {
 			keyCount++
 		}
 		if keyCount == 0 {
@@ -68,7 +73,7 @@ func main() {
 		}
 
 		currentCount := 1
-		currentCountBytes, errorObject := okDatabase.Get([]byte("counter"))
+		currentCountBytes, errorObject := okDatabase.Read("counter")
 		if errorObject == nil {
 			currentCountInt64, _ := strconv.ParseInt(string(currentCountBytes), 10, 0)
 			currentCount = int(currentCountInt64)
@@ -77,12 +82,12 @@ func main() {
 		captionArray := []string{}
 		heatmapArray := []string{}
 		highestCount := 1
-		keys := okDatabase.Keys()
+		keys := okDatabase.Keys(make(chan struct{}))
 		for key := range keys {
 			if strings.HasPrefix(string(key), "DAY.") {
 				dayString := strings.Split(string(key), "DAY.")[1]
 				repeatedTimes := 1
-				repeatedTimesBytes, errorObject := okDatabase.Get(key)
+				repeatedTimesBytes, errorObject := okDatabase.Read(key)
 				if errorObject == nil {
 					repeatedTimesInt64, _ := strconv.ParseInt(string(repeatedTimesBytes), 10, 0)
 					repeatedTimes = int(repeatedTimesInt64)
@@ -134,7 +139,7 @@ func main() {
 			captionText += caption + dayUnit + "    "
 		}
 		todayCounter := 1
-		todayCounterBytes, errorObject := okDatabase.Get([]byte("DAY." + strconv.Itoa(currentDay)))
+		todayCounterBytes, errorObject := okDatabase.Read("DAY." + strconv.Itoa(currentDay))
 		if errorObject == nil {
 			todayCounterInt64, _ := strconv.ParseInt(string(todayCounterBytes), 10, 0)
 			todayCounter = int(todayCounterInt64)
@@ -173,20 +178,20 @@ func main() {
 		}
 	} else {
 		currentCount := 1
-		currentCountBytes, errorObject := okDatabase.Get([]byte("DAY." + strconv.Itoa(currentDay)))
+		currentCountBytes, errorObject := okDatabase.Read("DAY." + strconv.Itoa(currentDay))
 		if errorObject == nil {
 			currentCountInt64, _ := strconv.ParseInt(string(currentCountBytes), 10, 0)
 			currentCount = int(currentCountInt64)
 		}
-		okDatabase.Put([]byte("DAY."+strconv.Itoa(currentDay)), []byte(strconv.Itoa(currentCount+1)))
+		okDatabase.Write("DAY."+strconv.Itoa(currentDay), []byte(strconv.Itoa(currentCount+1)))
 
 		currentCount = 1
-		currentCountBytes, errorObject = okDatabase.Get([]byte("counter"))
+		currentCountBytes, errorObject = okDatabase.Read("counter")
 		if errorObject == nil {
 			currentCountInt64, _ := strconv.ParseInt(string(currentCountBytes), 10, 0)
 			currentCount = int(currentCountInt64)
 		}
-		okDatabase.Put([]byte("counter"), []byte(strconv.Itoa(currentCount+1)))
+		okDatabase.Write("counter", []byte(strconv.Itoa(currentCount+1)))
 
 		red := uint8(rand.Intn(214) + 42)
 		green := uint8(rand.Intn(214) + 42)

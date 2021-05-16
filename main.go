@@ -55,14 +55,21 @@ func main() {
 	arguments := os.Args[1:]
 	showStatistics := false
 	resetValues := false
+	showHelpPage := false
 	for _, argument := range arguments {
 		if argument == "stats" || argument == "statistics" {
 			showStatistics = true
 		} else if argument == "reset" {
 			resetValues = true
+		} else if argument == "help" {
+			showHelpPage = true
 		}
 	}
-	if showStatistics {
+
+	if showHelpPage {
+		helpText := "<fg=white;op=bold;>ok</> - ok\n<fg=white;op=bold;>ok stats</> - shows your statistics\n<fg=white;op=bold;>ok reset</> - resets your statistics\n"
+		color.Printf(helpText)
+	} else if showStatistics {
 		keyCount := 0
 		for _ = range okDatabase.Keys(make(chan struct{})) {
 			keyCount++
@@ -193,13 +200,15 @@ func main() {
 		}
 		okDatabase.Write("counter", []byte(strconv.Itoa(currentCount+1)))
 
-		red := uint8(rand.Intn(214) + 42)
-		green := uint8(rand.Intn(214) + 42)
-		blue := uint8(rand.Intn(214) + 42)
-		color.RGB(red, green, blue).Print("o")
-		red = uint8(rand.Intn(214) + 42)
-		green = uint8(rand.Intn(214) + 42)
-		blue = uint8(rand.Intn(214) + 42)
-		color.RGB(red, green, blue).Println("k")
+		responses := []string{"ok", "ooka booka", "ok", "o k", "oooookaaa booookaaaa", "you said ok", "ok + 1", "ok = ok", "ok ok ok", "ok ok", "ok", "ooka", "booka"}
+		randomIndex := rand.Intn(len(responses))
+		outputResponse := responses[randomIndex]
+		for _, letter := range outputResponse {
+			red := uint8(rand.Intn(214) + 42)
+			green := uint8(rand.Intn(214) + 42)
+			blue := uint8(rand.Intn(214) + 42)
+			color.RGB(red, green, blue).Print(string(letter))
+		}
+		fmt.Println("")
 	}
 }

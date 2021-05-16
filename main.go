@@ -131,14 +131,20 @@ func main() {
 			} else if strings.HasSuffix(caption, "3") && caption != "13" {
 				dayUnit = "rd"
 			}
-			captionText += caption + dayUnit + "  "
+			captionText += caption + dayUnit + "    "
+		}
+		todayCounter := 1
+		todayCounterBytes, errorObject := okDatabase.Get([]byte("DAY." + strconv.Itoa(currentDay)))
+		if errorObject == nil {
+			todayCounterInt64, _ := strconv.ParseInt(string(todayCounterBytes), 10, 0)
+			todayCounter = int(todayCounterInt64)
 		}
 		graph := "Not enough data..."
 		heatmapOutput = heatmapOutput[:len(heatmapOutput)-2]
 		if len(numberArray) > 0 {
-			graph = asciigraph.Plot(numberArray, asciigraph.Width(14), asciigraph.Height(10), asciigraph.Caption(captionText))
+			graph = asciigraph.Plot(numberArray, asciigraph.Width(20), asciigraph.Height(10), asciigraph.Caption(captionText))
 		}
-		color.Printf("<fg=white;op=bold;>OK Counter:</> %v\n<fg=white;op=bold;>Records:</> %v\n<fg=white;op=bold;>Graph:</>\n%v\n", currentCount, heatmapOutput, graph)
+		color.Printf("<fg=white;op=bold;>OK Counter:</> %v\n<fg=white;op=bold;>Records:</> %v\n<fg=white;op=bold;>Graph:</>\n%v\n\nYou've said OK <fg=white;op=bold;>%v times</> today\n", currentCount, heatmapOutput, graph, todayCounter)
 	} else if resetValues {
 		scanner := bufio.NewScanner(os.Stdin)
 		color.Danger.Println("Are you sure you want to reset all values?")

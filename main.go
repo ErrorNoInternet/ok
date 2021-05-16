@@ -2,8 +2,11 @@ package main
 
 import (
 	"bufio"
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"math/rand"
+	"net/http"
 	"os"
 	"os/user"
 	"runtime"
@@ -15,6 +18,16 @@ import (
 	"github.com/guptarohit/asciigraph"
 	"github.com/peterbourgon/diskv"
 )
+
+type player struct {
+	Name  string `json:"name"`
+	Score int    `json:"score"`
+}
+
+type playerList struct {
+	Count   int      `json:"count"`
+	Players []player `json:"people"`
+}
 
 var okDatabase *diskv.Diskv
 
@@ -56,6 +69,8 @@ func main() {
 	showStatistics := false
 	resetValues := false
 	showHelpPage := false
+	showPlayerList := false
+	submitPlayer := false
 	for _, argument := range arguments {
 		if argument == "stats" || argument == "statistics" {
 			showStatistics = true
@@ -63,12 +78,87 @@ func main() {
 			resetValues = true
 		} else if argument == "help" {
 			showHelpPage = true
+		} else if argument == "list" {
+			showPlayerList = true
+		} else if argument == "submit" {
+			submitPlayer = true
 		}
 	}
 
 	if showHelpPage {
-		helpText := "<fg=white;op=bold;>ok</> - ok\n<fg=white;op=bold;>ok stats</> - shows your statistics\n<fg=white;op=bold;>ok reset</> - resets your statistics\n"
+		helpText := "<fg=white;op=bold;>ok</> - ok\n<fg=white;op=bold;>ok stats</> - shows your statistics\n<fg=white;op=bold;>ok reset</> - resets your statistics\n<fg=white;op=bold;>ok list</> - shows a list of new players\n<fg=white;op=bold;>ok submit</> - submit your profile to the player list\n"
 		color.Printf(helpText)
+	} else if showPlayerList {
+		fmt.Println("Fetching player list...")
+		httpResponse, errorObject := http.Get("http://ok-server.herokuapp.com/list")
+		if errorObject != nil {
+			fmt.Println("\rFailed to fetch player list")
+			return
+		}
+		var response playerList
+		responseBytes, errorObject := ioutil.ReadAll(httpResponse.Body)
+		if errorObject != nil {
+			fmt.Println("\rFailed to fetch player list")
+			return
+		}
+		_ = json.Unmarshal(responseBytes, &response)
+		if response.Count > 0 {
+			fmt.Println("")
+			for _, player := range response.Players {
+				color.Printf("%v - <fg=white;op=bold;>%v OKs</>\n", player.Name, player.Score)
+			}
+		} else {
+			fmt.Println("There are no players on the OK list...")
+		}
+		return
+	} else if submitPlayer {
+		scanner := bufio.NewScanner(os.Stdin)
+		fmt.Print("Username: ")
+		scanner.Scan()
+		userInput := scanner.Text()
+		if userInput == "" {
+			fmt.Println("Please enter a name!")
+			return
+		} else {
+			currentCount := 1
+			currentCountBytes, errorObject := okDatabase.Read("counter")
+			if errorObject == nil {
+				currentCountInt64, _ := strconv.ParseInt(string(currentCountBytes), 10, 0)
+				currentCount = int(currentCountInt64)
+			}
+			fmt.Printf("Submitting profile...")
+			httpResponse, errorObject := http.Get("http://ok-server.herokuapp.com/list")
+			if errorObject != nil {
+				fmt.Println("\rFailed to fetch player list")
+				return
+			}
+			var response playerList
+			responseBytes, errorObject := ioutil.ReadAll(httpResponse.Body)
+			if errorObject != nil {
+				fmt.Println("\rFailed to fetch player list")
+				return
+			}
+			_ = json.Unmarshal(responseBytes, &response)
+			playerFound := false
+			if response.Count > 0 {
+				for _, player := range response.Players {
+					if player.Name == userInput {
+						playerFound = true
+					}
+				}
+			}
+			if playerFound {
+				fmt.Println("\rThat player is already in the player list!\nIf you want to update your OK count, please wait 24 hours.")
+				return
+			}
+			_, errorObject = http.Get(fmt.Sprintf("http://ok-server.herokuapp.com/submit/%v/%v/%v", time.Now().Unix(), userInput, currentCount))
+			if errorObject != nil {
+				fmt.Println("\rFailed to fetch player list")
+				return
+			}
+			fmt.Println("\rSuccessfully submitted profile to player list!")
+			return
+		}
 	} else if showStatistics {
 		keyCount := 0
 		for _ = range okDatabase.Keys(make(chan struct{})) {

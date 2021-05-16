@@ -6,3 +6,10 @@ Download the latest release and `sudo cp <file> /usr/bin/ok`
 
 ## Installation (Windows)
 Download `ok.exe` from the releases tab and copy it to the `system32` folder
+
+## Usages
+```
+ok 
+ok stats
+ok reset
+```

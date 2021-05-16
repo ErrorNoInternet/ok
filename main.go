@@ -120,13 +120,13 @@ func main() {
 			fmt.Println("Please enter a name!")
 			return
 		} else {
+			fmt.Printf("Submitting profile...")
 			currentCount := 1
 			currentCountBytes, errorObject := okDatabase.Read("counter")
 			if errorObject == nil {
 				currentCountInt64, _ := strconv.ParseInt(string(currentCountBytes), 10, 0)
 				currentCount = int(currentCountInt64)
 			}
-			fmt.Printf("Submitting profile...")
 			httpResponse, errorObject := http.Get("http://ok-server.herokuapp.com/list")
 			if errorObject != nil {
 				fmt.Println("\rFailed to fetch player list")
@@ -153,7 +153,7 @@ func main() {
 			}
 			_, errorObject = http.Get(fmt.Sprintf("http://ok-server.herokuapp.com/submit/%v/%v/%v", time.Now().Unix(), userInput, currentCount))
 			if errorObject != nil {
-				fmt.Println("\rFailed to fetch player list")
+				fmt.Println("\rFailed to submit profile")
 				return
 			}
 			fmt.Println("\rSuccessfully submitted profile to player list!")

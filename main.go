@@ -34,7 +34,7 @@ func main() {
 	if runtime.GOOS == "linux" {
 		databasePath = "/home/" + userObject.Username + "/.OkDatabase"
 	} else if runtime.GOOS == "windows" {
-		databasePath = "C:\\Users\\" + userObject.Username + "\\Documents\\OkDatabase"
+		databasePath = userObject.HomeDir + "\\OkDatabase"
 	}
 
 	rand.Seed(time.Now().UnixNano())

@@ -101,11 +101,11 @@ func main() {
 				if repeatedTimes > highestCount {
 					highestCount = repeatedTimes
 					dayUnit := "th"
-					if strings.HasSuffix(dayString, "1") {
+					if strings.HasSuffix(dayString, "1") && dayString != "11" {
 						dayUnit = "st"
-					} else if strings.HasSuffix(dayString, "2") {
+					} else if strings.HasSuffix(dayString, "2") && dayString != "12" {
 						dayUnit = "nd"
-					} else if strings.HasSuffix(dayString, "3") {
+					} else if strings.HasSuffix(dayString, "3") && dayString != "13" {
 						dayUnit = "rd"
 					}
 					heatmapArray = append(heatmapArray, fmt.Sprintf("%v%v - %v times", dayString, dayUnit, repeatedTimes))
@@ -124,11 +124,11 @@ func main() {
 		captionText := ""
 		for _, caption := range captionArray {
 			dayUnit := "th"
-			if strings.HasSuffix(caption, "1") {
+			if strings.HasSuffix(caption, "1") && caption != "11" {
 				dayUnit = "st"
-			} else if strings.HasSuffix(caption, "2") {
+			} else if strings.HasSuffix(caption, "2") && caption != "12" {
 				dayUnit = "nd"
-			} else if strings.HasSuffix(caption, "3") {
+			} else if strings.HasSuffix(caption, "3") && caption != "13" {
 				dayUnit = "rd"
 			}
 			captionText += caption + dayUnit + "  "

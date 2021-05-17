@@ -94,7 +94,7 @@ func main() {
 	}
 
 	if showHelpPage {
-		helpText := "<fg=white;op=bold;>ok</> - ok\n<fg=white;op=bold;>ok stats</> - shows your statistics\n<fg=white;op=bold;>ok reset</> - resets your statistics\n<fg=white;op=bold;>ok leaderboard</> - shows the OK leaderboard\n<fg=white;op=bold;>ok submit</> - submit your profile to the player list\n"
+		helpText := "<fg=white;op=bold;>ok</> - ok\n<fg=white;op=bold;>ok stats</> - shows your statistics\n<fg=white;op=bold;>ok reset</> - resets your statistics\n<fg=white;op=bold;>ok leaderboard</> - shows the OK leaderboard\n<fg=white;op=bold;>ok submit</> - submit your profile to the leaderboard\n"
 		color.Printf(helpText)
 	} else if showPlayerList {
 		fmt.Println("Fetching leaderboard...")

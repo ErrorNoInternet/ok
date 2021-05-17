@@ -79,6 +79,8 @@ func main() {
 	showHelpPage := false
 	showPlayerList := false
 	submitPlayer := false
+	postMessage := false
+	receiveMessage := false
 	extraText := ""
 	for _, argument := range arguments {
 		if argument == "stats" || argument == "statistics" {
@@ -91,13 +93,17 @@ func main() {
 			showPlayerList = true
 		} else if argument == "submit" {
 			submitPlayer = true
+		} else if argument == "post" || argument == "send" {
+			postMessage = true
+		} else if argument == "receive" {
+			receiveMessage = true
 		} else {
 			extraText += " " + argument
 		}
 	}
 
 	if showHelpPage {
-		helpText := "<fg=white;op=bold;>ok</> - ok\n<fg=white;op=bold;>ok stats</> - shows your statistics\n<fg=white;op=bold;>ok reset</> - resets your statistics\n<fg=white;op=bold;>ok list</> - shows the OK leaderboard\n<fg=white;op=bold;>ok submit</> - submit your profile to the leaderboard\n"
+		helpText := "<fg=white;op=bold;>ok</> - ok\n<fg=white;op=bold;>ok stats</> - shows your statistics\n<fg=white;op=bold;>ok reset</> - resets your statistics\n<fg=white;op=bold;>ok list</> - shows the OK leaderboard\n<fg=white;op=bold;>ok submit</> - submit your scores to the leaderboard\n<fg=white;op=bold;>ok post</> - post a message visible to everyone\n<fg=white;op=bold;>ok receive</> - receive a random message\n"
 		color.Printf(helpText)
 	} else if showPlayerList {
 		fmt.Println("Fetching leaderboard...")
@@ -133,6 +139,34 @@ func main() {
 			}
 		} else {
 			fmt.Println("There are no players on the OK leaderboard...")
+		}
+		return
+	} else if postMessage {
+		scanner := bufio.NewScanner(os.Stdin)
+		fmt.Print("Message: ")
+		scanner.Scan()
+		message := scanner.Text()
+		fmt.Print("Sending message...")
+		_, errorObject := http.Get("http://ok-server.herokuapp.com/send/" + message)
+		if errorObject != nil {
+			fmt.Println("\rFailed to send message")
+		} else {
+			fmt.Println("\rSuccessfully sent message")
+		}
+		return
+	} else if receiveMessage {
+		fmt.Printf("Fetching random message...")
+		httpResponse, errorObject := http.Get("http://ok-server.herokuapp.com/message")
+		if errorObject != nil {
+			fmt.Println("\rFailed to get random message")
+			return
+		}
+		responseBytes, _ := ioutil.ReadAll(httpResponse.Body)
+		response := string(responseBytes)
+		if strings.HasPrefix(response, "ERROR.") {
+			fmt.Println("\rNo one has sent any message so far")
+		} else {
+			color.Println("\r<fg=white;op=bold;>Here's a random message sent by someone:</>\n" + response)
 		}
 		return
 	} else if submitPlayer {

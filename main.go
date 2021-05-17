@@ -97,7 +97,7 @@ func main() {
 	}
 
 	if showHelpPage {
-		helpText := "<fg=white;op=bold;>ok</> - ok\n<fg=white;op=bold;>ok stats</> - shows your statistics\n<fg=white;op=bold;>ok reset</> - resets your statistics\n<fg=white;op=bold;>ok leaderboard</> - shows the OK leaderboard\n<fg=white;op=bold;>ok submit</> - submit your profile to the leaderboard\n"
+		helpText := "<fg=white;op=bold;>ok</> - ok\n<fg=white;op=bold;>ok stats</> - shows your statistics\n<fg=white;op=bold;>ok reset</> - resets your statistics\n<fg=white;op=bold;>ok list</> - shows the OK leaderboard\n<fg=white;op=bold;>ok submit</> - submit your profile to the leaderboard\n"
 		color.Printf(helpText)
 	} else if showPlayerList {
 		fmt.Println("Fetching leaderboard...")
@@ -166,7 +166,7 @@ func main() {
 				errorName := strings.Split(response, ".")[1]
 				fmt.Println("\rFailed to submit profile: " + errorName)
 			} else {
-				fmt.Println("\rSuccessfully submitted profile to player list!")
+				fmt.Println("\rSuccessfully submitted profile to leaderboard")
 			}
 			return
 		}

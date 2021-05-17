@@ -79,6 +79,7 @@ func main() {
 	showHelpPage := false
 	showPlayerList := false
 	submitPlayer := false
+	extraText := ""
 	for _, argument := range arguments {
 		if argument == "stats" || argument == "statistics" {
 			showStatistics = true
@@ -90,6 +91,8 @@ func main() {
 			showPlayerList = true
 		} else if argument == "submit" {
 			submitPlayer = true
+		} else {
+			extraText += " " + argument
 		}
 	}
 
@@ -306,6 +309,14 @@ func main() {
 			green := uint8(rand.Intn(214) + 42)
 			blue := uint8(rand.Intn(214) + 42)
 			color.RGB(red, green, blue).Print(string(letter))
+		}
+		if extraText != "" {
+			for _, letter := range extraText {
+				red := uint8(rand.Intn(214) + 42)
+				green := uint8(rand.Intn(214) + 42)
+				blue := uint8(rand.Intn(214) + 42)
+				color.RGB(red, green, blue).Print(string(letter))
+			}
 		}
 		fmt.Println("")
 	}

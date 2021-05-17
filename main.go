@@ -116,6 +116,9 @@ func main() {
 		fmt.Print("Username: ")
 		scanner.Scan()
 		userInput := scanner.Text()
+		fmt.Print("Password: ")
+		scanner.Scan()
+		userPassword := scanner.Text()
 		if userInput == "" {
 			fmt.Println("Please enter a name!")
 			return
@@ -127,36 +130,20 @@ func main() {
 				currentCountInt64, _ := strconv.ParseInt(string(currentCountBytes), 10, 0)
 				currentCount = int(currentCountInt64)
 			}
-			httpResponse, errorObject := http.Get("http://ok-server.herokuapp.com/list")
-			if errorObject != nil {
-				fmt.Println("\rFailed to fetch player list")
-				return
-			}
-			var response playerList
-			responseBytes, errorObject := ioutil.ReadAll(httpResponse.Body)
-			if errorObject != nil {
-				fmt.Println("\rFailed to fetch player list")
-				return
-			}
-			_ = json.Unmarshal(responseBytes, &response)
-			playerFound := false
-			if response.Count > 0 {
-				for _, player := range response.Players {
-					if player.Name == userInput {
-						playerFound = true
-					}
-				}
-			}
-			if playerFound {
-				fmt.Println("\rThat player is already in the player list!\nIf you want to update your OK count, please wait 24 hours.")
-				return
-			}
-			_, errorObject = http.Get(fmt.Sprintf("http://ok-server.herokuapp.com/submit/%v/%v/%v", time.Now().Unix(), userInput, currentCount))
+			httpResponse, errorObject := http.Get(fmt.Sprintf("http://ok-server.herokuapp.com/submit/%v/%v/%v/%v", time.Now().Unix(), userInput, userPassword, currentCount))
 			if errorObject != nil {
 				fmt.Println("\rFailed to submit profile")
 				return
 			}
-			fmt.Println("\rSuccessfully submitted profile to player list!")
+			responseBytes, _ := ioutil.ReadAll(httpResponse.Body)
+			response := string(responseBytes)
+
+			if strings.HasPrefix(response, "ERROR.") {
+				errorName := strings.Split(response, ".")[1]
+				fmt.Println("\rFailed to submit profile: " + errorName)
+			} else {
+				fmt.Println("\rSuccessfully submitted profile to player list!")
+			}
 			return
 		}
 	} else if showStatistics {

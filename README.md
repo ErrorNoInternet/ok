@@ -17,4 +17,6 @@ chmod 777 ok
 alias ok=./ok
 ```
 
+--------------------
+
 Use `ok help` to get a list of commands

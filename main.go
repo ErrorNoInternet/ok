@@ -10,6 +10,7 @@ import (
 	"os"
 	"os/user"
 	"runtime"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -32,6 +33,13 @@ type playerList struct {
 var okDatabase *diskv.Diskv
 
 func reverseArray(arr []string) []string {
+	for i, j := 0, len(arr)-1; i < j; i, j = i+1, j-1 {
+		arr[i], arr[j] = arr[j], arr[i]
+	}
+	return arr
+}
+
+func reverseIntArray(arr []int) []int {
 	for i, j := 0, len(arr)-1; i < j; i, j = i+1, j-1 {
 		arr[i], arr[j] = arr[j], arr[i]
 	}
@@ -78,7 +86,7 @@ func main() {
 			resetValues = true
 		} else if argument == "help" {
 			showHelpPage = true
-		} else if argument == "list" {
+		} else if argument == "list" || argument == "leaderboard" || argument == "lb" {
 			showPlayerList = true
 		} else if argument == "submit" {
 			submitPlayer = true
@@ -86,10 +94,10 @@ func main() {
 	}
 
 	if showHelpPage {
-		helpText := "<fg=white;op=bold;>ok</> - ok\n<fg=white;op=bold;>ok stats</> - shows your statistics\n<fg=white;op=bold;>ok reset</> - resets your statistics\n<fg=white;op=bold;>ok list</> - shows a list of new players\n<fg=white;op=bold;>ok submit</> - submit your profile to the player list\n"
+		helpText := "<fg=white;op=bold;>ok</> - ok\n<fg=white;op=bold;>ok stats</> - shows your statistics\n<fg=white;op=bold;>ok reset</> - resets your statistics\n<fg=white;op=bold;>ok leaderboard</> - shows the OK leaderboard\n<fg=white;op=bold;>ok submit</> - submit your profile to the player list\n"
 		color.Printf(helpText)
 	} else if showPlayerList {
-		fmt.Println("Fetching player list...")
+		fmt.Println("Fetching leaderboard...")
 		httpResponse, errorObject := http.Get("http://ok-server.herokuapp.com/list")
 		if errorObject != nil {
 			fmt.Println("\rFailed to fetch player list")
@@ -102,13 +110,26 @@ func main() {
 			return
 		}
 		_ = json.Unmarshal(responseBytes, &response)
+		numberArray := []int{}
+		playerList := make(map[int]string)
 		if response.Count > 0 {
 			fmt.Println("")
+
 			for _, player := range response.Players {
-				color.Printf("%v - <fg=white;op=bold;>%v OKs</>\n", player.Name, player.Score)
+				numberArray = append(numberArray, player.Score)
+				playerList[player.Score] = player.Name
+			}
+			sort.Ints(numberArray)
+			numberArray = reverseIntArray(numberArray)
+			for index, number := range numberArray {
+				playerName := playerList[number]
+				color.Printf("<fg=white;op=bold;>%v.</> %v - <fg=white;op=bold;>%v OKs</>\n", index+1, playerName, number)
+				if index == 9 {
+					return
+				}
 			}
 		} else {
-			fmt.Println("There are no players on the OK list...")
+			fmt.Println("There are no players on the OK leaderboard...")
 		}
 		return
 	} else if submitPlayer {

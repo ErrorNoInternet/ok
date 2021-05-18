@@ -60,7 +60,7 @@ func reverseIntArray(arr []int) []int {
 }
 
 var okDatabase *diskv.Diskv
-var currentVersion string = "1.4.3"
+var currentVersion string = "1.4.4"
 
 func main() {
 	databasePath := "OkDatabase"
@@ -99,6 +99,7 @@ func main() {
 	receiveMessage := false
 	updateProgram := false
 	showVersion := false
+	leaveLeaderboard := false
 	extraText := ""
 	for _, argument := range arguments {
 		if argument == "stats" || argument == "statistics" {
@@ -109,7 +110,7 @@ func main() {
 			showHelpPage = true
 		} else if argument == "list" || argument == "leaderboard" || argument == "lb" {
 			showPlayerList = true
-		} else if argument == "submit" {
+		} else if argument == "submit" || argument == "join" {
 			submitPlayer = true
 		} else if argument == "post" || argument == "send" {
 			postMessage = true
@@ -119,14 +120,56 @@ func main() {
 			updateProgram = true
 		} else if argument == "version" {
 			showVersion = true
+		} else if argument == "leave" || argument == "remove" {
+			leaveLeaderboard = true
 		} else {
 			extraText += " " + argument
 		}
 	}
 
 	if showHelpPage {
-		helpText := "<fg=white;op=bold;>ok</> - ok\n<fg=white;op=bold;>ok stats</> - shows your statistics\n<fg=white;op=bold;>ok reset</> - resets your statistics\n<fg=white;op=bold;>ok list</> - shows the OK leaderboard\n<fg=white;op=bold;>ok submit</> - join the OK leaderboard\n<fg=white;op=bold;>ok post</> - post a public message\n<fg=white;op=bold;>ok receive</> - receive a random message\n<fg=white;op=bold;>ok version</> - shows the OK version\n<fg=white;op=bold;>ok update</> - checks for OK updates\n"
+		helpText := "<fg=white;op=bold;>ok</> - ok\n<fg=white;op=bold;>ok stats</> - shows your statistics\n<fg=white;op=bold;>ok reset</> - resets your statistics\n<fg=white;op=bold;>ok list</> - shows the OK leaderboard\n<fg=white;op=bold;>ok join</> - join the OK leaderboard\n<fg=white;op=bold;>ok leave</> - leave the OK leaderboard\n<fg=white;op=bold;>ok post</> - post a public message\n<fg=white;op=bold;>ok receive</> - receive a random message\n<fg=white;op=bold;>ok version</> - shows the OK version\n<fg=white;op=bold;>ok update</> - checks for OK updates\n"
 		color.Printf(helpText)
+	} else if leaveLeaderboard {
+		scanner := bufio.NewScanner(os.Stdin)
+		fmt.Print("Username: ")
+		scanner.Scan()
+		userInput := scanner.Text()
+		fmt.Print("Password: ")
+		userPassword := ""
+		userPasswordBytes, errorObject := gopass.GetPasswd()
+		if errorObject == nil {
+			userPassword = string(userPasswordBytes)
+		}
+		if userInput == "" {
+			fmt.Println("Please enter a name!")
+			return
+		} else if userPassword == "" {
+			fmt.Println("Please enter a password!")
+			return
+		} else {
+			fmt.Printf("Leaving leaderboard...")
+			httpResponse, errorObject := http.Get(fmt.Sprintf("http://ok-server.herokuapp.com/remove/%v/%v", userInput, userPassword))
+			if errorObject != nil {
+				fmt.Println("\rFailed to leave leaderboard...")
+				return
+			}
+			response := ""
+			responseBytes, errorObject := ioutil.ReadAll(httpResponse.Body)
+			if errorObject != nil {
+				fmt.Println("\rFailed to leave leaderboard...")
+				return
+			} else {
+				response = string(responseBytes)
+			}
+			if strings.HasPrefix(response, "ERROR.") {
+				errorName := strings.Split(response, "ERROR.")[1]
+				fmt.Println("\rError: " + errorName)
+			} else {
+				fmt.Println("\rSuccessfully removed player from leaderboard")
+			}
+			return
+		}
 	} else if showVersion {
 		color.Printf("OK Version: <fg=white;op=bold;>%v</>\n", currentVersion)
 		return

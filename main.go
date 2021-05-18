@@ -149,9 +149,9 @@ func main() {
 		fmt.Print("Sending message...")
 		_, errorObject := http.Get("http://ok-server.herokuapp.com/send/" + message)
 		if errorObject != nil {
-			fmt.Println("\rFailed to send message")
+			fmt.Println("\rFailed to send message...")
 		} else {
-			fmt.Println("\rSuccessfully sent message")
+			fmt.Println("\rSuccessfully sent message!")
 		}
 		return
 	} else if receiveMessage {
@@ -164,7 +164,7 @@ func main() {
 		responseBytes, _ := ioutil.ReadAll(httpResponse.Body)
 		response := string(responseBytes)
 		if strings.HasPrefix(response, "ERROR.") {
-			fmt.Println("\rNo one has sent any message so far")
+			fmt.Println("\rNo one has sent any message...")
 		} else {
 			color.Println("\r<fg=white;op=bold;>Here's a random message sent by someone:</>\n" + response)
 		}
@@ -179,6 +179,9 @@ func main() {
 		userPassword := scanner.Text()
 		if userInput == "" {
 			fmt.Println("Please enter a name!")
+			return
+		} else if userPassword == "" {
+			fmt.Println("Please enter a password!")
 			return
 		} else {
 			fmt.Printf("Submitting profile...")
@@ -200,7 +203,7 @@ func main() {
 				errorName := strings.Split(response, ".")[1]
 				fmt.Println("\rFailed to submit profile: " + errorName)
 			} else {
-				fmt.Println("\rSuccessfully submitted profile to leaderboard")
+				fmt.Println("\rSuccessfully submitted profile to leaderboard!")
 			}
 			return
 		}

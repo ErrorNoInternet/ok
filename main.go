@@ -17,6 +17,7 @@ import (
 
 	"github.com/gookit/color"
 	"github.com/guptarohit/asciigraph"
+	"github.com/howeyc/gopass"
 	"github.com/peterbourgon/diskv"
 )
 
@@ -175,8 +176,11 @@ func main() {
 		scanner.Scan()
 		userInput := scanner.Text()
 		fmt.Print("Password: ")
-		scanner.Scan()
-		userPassword := scanner.Text()
+		userPassword := ""
+		userPasswordBytes, errorObject := gopass.GetPasswd()
+		if errorObject == nil {
+			userPassword = string(userPasswordBytes)
+		}
 		if userInput == "" {
 			fmt.Println("Please enter a name!")
 			return

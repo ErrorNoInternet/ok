@@ -31,7 +31,19 @@ type playerList struct {
 	Players []player `json:"people"`
 }
 
-var okDatabase *diskv.Diskv
+type githubAssetData struct {
+	Name          string `json:"name"`
+	URL           string `json:"browser_download_url"`
+	DownloadCount int    `json:"download_count"`
+}
+
+type githubRelease struct {
+	HtmlURL     string            `json:"html_url"`
+	TagName     string            `json:"tag_name"`
+	ReleaseName string            `json:"release_name"`
+	Prerelease  bool              `json:"prerelease"`
+	AssetData   []githubAssetData `json:"assets"`
+}
 
 func reverseArray(arr []string) []string {
 	for i, j := 0, len(arr)-1; i < j; i, j = i+1, j-1 {
@@ -47,8 +59,11 @@ func reverseIntArray(arr []int) []int {
 	return arr
 }
 
+var okDatabase *diskv.Diskv
+var currentVersion string = "1.4.3"
+
 func main() {
-	databasePath := "."
+	databasePath := "OkDatabase"
 	userObject, errorObject := user.Current()
 	if errorObject != nil {
 		panic(errorObject)
@@ -82,6 +97,7 @@ func main() {
 	submitPlayer := false
 	postMessage := false
 	receiveMessage := false
+	updateProgram := false
 	extraText := ""
 	for _, argument := range arguments {
 		if argument == "stats" || argument == "statistics" {
@@ -98,25 +114,52 @@ func main() {
 			postMessage = true
 		} else if argument == "receive" {
 			receiveMessage = true
+		} else if argument == "update" {
+			updateProgram = true
 		} else {
 			extraText += " " + argument
 		}
 	}
 
 	if showHelpPage {
-		helpText := "<fg=white;op=bold;>ok</> - ok\n<fg=white;op=bold;>ok stats</> - shows your statistics\n<fg=white;op=bold;>ok reset</> - resets your statistics\n<fg=white;op=bold;>ok list</> - shows the OK leaderboard\n<fg=white;op=bold;>ok submit</> - submit your scores to the leaderboard\n<fg=white;op=bold;>ok post</> - post a message visible to everyone\n<fg=white;op=bold;>ok receive</> - receive a random message\n"
+		helpText := "<fg=white;op=bold;>ok</> - ok\n<fg=white;op=bold;>ok stats</> - shows your statistics\n<fg=white;op=bold;>ok reset</> - resets your statistics\n<fg=white;op=bold;>ok list</> - shows the OK leaderboard\n<fg=white;op=bold;>ok submit</> - join the OK leaderboard\n<fg=white;op=bold;>ok post</> - post a public message\n<fg=white;op=bold;>ok receive</> - receive a random message\n<fg=white;op=bold;>ok update</> - check for OK updates\n"
 		color.Printf(helpText)
+	} else if updateProgram {
+		fmt.Printf("Checking for updates...")
+		httpResponse, errorObject := http.Get("https://api.github.com/repos/ErrorNoInternet/ok/releases/latest")
+		if errorObject != nil {
+			fmt.Println("\rFailed to check for updates...")
+			return
+		}
+		var response githubRelease
+		responseBytes, errorObject := ioutil.ReadAll(httpResponse.Body)
+		if errorObject != nil {
+			fmt.Println("\rFailed to check for updates...")
+			return
+		}
+		_ = json.Unmarshal(responseBytes, &response)
+		if response.TagName != currentVersion && !strings.Contains(response.TagName, "termux") {
+			boldTag := "<fg=white;op=bold;>"
+			downloadCount := 0
+			for _, asset := range response.AssetData {
+				downloadCount += asset.DownloadCount
+			}
+			color.Printf("%vNew update!</> Version %v%v</>: %v%v</>\nGitHub URL: \n%v\n%v%v</> people have downloaded this update\n", boldTag, boldTag, response.TagName, boldTag, response.ReleaseName, response.HtmlURL, boldTag, downloadCount)
+		} else {
+			fmt.Println("\rThere are no new updates...")
+		}
+		return
 	} else if showPlayerList {
 		fmt.Println("Fetching leaderboard...")
 		httpResponse, errorObject := http.Get("http://ok-server.herokuapp.com/list")
 		if errorObject != nil {
-			fmt.Println("\rFailed to fetch player list")
+			fmt.Println("Failed to fetch player list")
 			return
 		}
 		var response playerList
 		responseBytes, errorObject := ioutil.ReadAll(httpResponse.Body)
 		if errorObject != nil {
-			fmt.Println("\rFailed to fetch player list")
+			fmt.Println("Failed to fetch player list")
 			return
 		}
 		_ = json.Unmarshal(responseBytes, &response)

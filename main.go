@@ -60,7 +60,7 @@ func reverseIntArray(arr []int) []int {
 }
 
 var okDatabase *diskv.Diskv
-var currentVersion string = "1.4.4"
+var currentVersion string = "1.4.5"
 
 func main() {
 	databasePath := "OkDatabase"
@@ -70,6 +70,10 @@ func main() {
 	}
 	if runtime.GOOS == "linux" {
 		databasePath = "/home/" + userObject.Username + "/.OkDatabase"
+		_, errorObject := os.Stat(databasePath)
+		if errorObject != nil {
+			databasePath = "OkDatabase"
+		}
 	} else if runtime.GOOS == "windows" {
 		databasePath = userObject.HomeDir + "\\OkDatabase"
 	}
@@ -202,13 +206,13 @@ func main() {
 		fmt.Print("Fetching leaderboard...")
 		httpResponse, errorObject := http.Get("http://ok-server.herokuapp.com/list")
 		if errorObject != nil {
-			fmt.Println("\rFailed to fetch player list")
+			fmt.Println("\rFailed to fetch player list...")
 			return
 		}
 		var response playerList
 		responseBytes, errorObject := ioutil.ReadAll(httpResponse.Body)
 		if errorObject != nil {
-			fmt.Println("\rFailed to fetch player list")
+			fmt.Println("\rFailed to fetch player list...")
 			return
 		}
 		_ = json.Unmarshal(responseBytes, &response)
@@ -251,7 +255,7 @@ func main() {
 		fmt.Printf("Fetching random message...")
 		httpResponse, errorObject := http.Get("http://ok-server.herokuapp.com/message")
 		if errorObject != nil {
-			fmt.Println("\rFailed to get random message")
+			fmt.Println("\rFailed to get random message...")
 			return
 		}
 		responseBytes, _ := ioutil.ReadAll(httpResponse.Body)
@@ -289,7 +293,7 @@ func main() {
 			}
 			httpResponse, errorObject := http.Get(fmt.Sprintf("http://ok-server.herokuapp.com/submit/%v/%v/%v/%v", time.Now().Unix(), userInput, userPassword, currentCount))
 			if errorObject != nil {
-				fmt.Println("\rFailed to submit profile")
+				fmt.Println("\rFailed to submit profile...")
 				return
 			}
 			responseBytes, _ := ioutil.ReadAll(httpResponse.Body)
@@ -339,7 +343,7 @@ func main() {
 				if errorObject == nil {
 					dayInt = int(dayInt64)
 				}
-				if currentDay-dayInt < 3 {
+				if currentDay-dayInt < 3 && currentDay-dayInt >= 0 {
 					captionArray = append(captionArray, dayString)
 					numberArray = append(numberArray, float64(repeatedTimes))
 				}
@@ -404,9 +408,9 @@ func main() {
 			if confirmation == "y" {
 				errorObject := os.RemoveAll(databasePath)
 				if errorObject == nil {
-					fmt.Println("\nSuccessfully deleted all values.")
+					fmt.Println("\nSuccessfully deleted all values")
 				} else {
-					fmt.Println("\nFailed to delete all values.\n" + errorObject.Error())
+					fmt.Println("\nFailed to delete all values...\n" + errorObject.Error())
 				}
 				return
 			} else {

@@ -3,9 +3,6 @@ This is a command that simply prints "ok" onto your screen whenever you run the 
 ![Screenshot](https://raw.githubusercontent.com/ErrorNoInternet/ok/main/ok.png)
 
 --------------------
-**[June 30, 2021]** :warning: **Notice**: The `ok-server` is currently down due to Heroku issues, will be fixed ASAP.
-
---------------------
 
 ## Installation (Linux)
 Download the latest release into your Downloads folder and open a shell.

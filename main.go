@@ -60,7 +60,7 @@ func reverseIntArray(arr []int) []int {
 }
 
 var okDatabase *diskv.Diskv
-var currentVersion string = "1.4.5"
+var currentVersion string = "1.4.6"
 
 func main() {
 	databasePath := "OkDatabase"

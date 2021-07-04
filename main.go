@@ -71,8 +71,10 @@ func main() {
 	if runtime.GOOS == "linux" {
 		databasePath = "/home/" + userObject.Username + "/.OkDatabase"
 		_, errorObject := os.Stat(databasePath)
-		if !strings.Contains(errorObject.Error(), "no such") {
-			databasePath = "OkDatabase"
+		if errorObject != nil {
+			if !strings.Contains(errorObject.Error(), "no such") {
+				databasePath = "OkDatabase"
+			}
 		}
 	} else if runtime.GOOS == "windows" {
 		databasePath = userObject.HomeDir + "\\OkDatabase"

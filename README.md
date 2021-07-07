@@ -1,5 +1,6 @@
 # ok
 This is a command that simply prints "ok" onto your screen whenever you run the `ok` command
+
 ![Screenshot](https://raw.githubusercontent.com/ErrorNoInternet/ok/main/ok.png)
 
 --------------------

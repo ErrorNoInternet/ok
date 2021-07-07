@@ -13,7 +13,7 @@ sudo cp ~/Downloads/ok /usr/bin/ok
 ```
 
 ## Installation (Windows)
-Download `ok.exe` from the releases tab and copy it to any folder in `$PATH` (for example `system32`).
+Download `ok.exe` from the releases tab and copy it to any folder in `%PATH%` (for example `system32`).
 
 ## Installation (Android)
 Download `ok-aarch64` from v1.4.1-termux into your downloads folder and open Termux.

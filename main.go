@@ -84,7 +84,7 @@ func main() {
 	okDatabase := diskv.New(diskv.Options{
 		BasePath:     databasePath,
 		Transform:    flatTransform,
-		CacheSizeMax: 1024 * 1024,
+		CacheSizeMax: 1024 * 128,
 	})
 
 	arguments := os.Args[1:]
@@ -307,7 +307,7 @@ func main() {
 			keyCount++
 		}
 		if keyCount == 0 {
-			fmt.Println("No statistics...")
+			fmt.Println("No OKs...")
 			return
 		}
 
@@ -383,7 +383,7 @@ func main() {
 			todayCounterInt64, _ := strconv.ParseInt(string(todayCounterBytes), 10, 0)
 			todayCounter = int(todayCounterInt64)
 		}
-		graph := "Not enough data..."
+		graph := "Not enough OKs..."
 		heatmapOutput = heatmapOutput[:len(heatmapOutput)-2]
 		if len(numberArray) > 0 {
 			graph = asciigraph.Plot(numberArray, asciigraph.Width(20), asciigraph.Height(10), asciigraph.Caption(captionText))
@@ -432,7 +432,7 @@ func main() {
 		}
 		okDatabase.Write("counter", []byte(strconv.Itoa(currentCount+1)))
 
-		responses := []string{"ok", "ooka booka", "ok", "o k", "oooookaaa booookaaaa", "you said ok", "ok + 1", "ok = ok", "ok ok ok", "ok ok", "ok", "ooka", "booka"}
+		responses := []string{"ok", "ooka booka", "ok", "o k", "you said ok", "ok + 1", "ok = ok", "ok ok", "ok x69"}
 		randomIndex := rand.Intn(len(responses))
 		outputResponse := responses[randomIndex]
 		for _, letter := range outputResponse {

@@ -384,7 +384,9 @@ func main() {
 			todayCounter = int(todayCounterInt64)
 		}
 		graph := "Not enough OKs..."
-		heatmapOutput = heatmapOutput[:len(heatmapOutput)-2]
+		if len(heatmapOutput) > 2 {
+			heatmapOutput = heatmapOutput[:len(heatmapOutput)-2]
+		}
 		if len(numberArray) > 0 {
 			graph = asciigraph.Plot(numberArray, asciigraph.Width(20), asciigraph.Height(10), asciigraph.Caption(captionText))
 		}

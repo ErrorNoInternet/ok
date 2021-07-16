@@ -31,32 +31,24 @@ type playerList struct {
 	Players []player `json:"people"`
 }
 
-type githubAssetData struct {
-	Name          string `json:"name"`
-	URL           string `json:"browser_download_url"`
-	DownloadCount int    `json:"download_count"`
-}
-
 type githubRelease struct {
-	HtmlURL     string            `json:"html_url"`
-	TagName     string            `json:"tag_name"`
-	ReleaseName string            `json:"name"`
-	Prerelease  bool              `json:"prerelease"`
-	AssetData   []githubAssetData `json:"assets"`
+	HtmlURL     string `json:"html_url"`
+	TagName     string `json:"tag_name"`
+	ReleaseName string `json:"name"`
 }
 
-func reverseArray(arr []string) []string {
-	for i, j := 0, len(arr)-1; i < j; i, j = i+1, j-1 {
-		arr[i], arr[j] = arr[j], arr[i]
+func reverseArray(array []string) []string {
+	for index, counter := 0, len(array)-1; index < counter; index, counter = index+1, counter-1 {
+		array[index], array[counter] = array[counter], array[counter]
 	}
-	return arr
+	return array
 }
 
-func reverseIntArray(arr []int) []int {
-	for i, j := 0, len(arr)-1; i < j; i, j = i+1, j-1 {
-		arr[i], arr[j] = arr[j], arr[i]
+func reverseIntArray(array []int) []int {
+	for index, counter := 0, len(array)-1; index < counter; index, counter = index+1, counter-1 {
+		array[index], array[counter] = array[counter], array[counter]
 	}
-	return arr
+	return array
 }
 
 var okDatabase *diskv.Diskv

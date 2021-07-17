@@ -52,10 +52,10 @@ func reverseIntArray(array []int) []int {
 }
 
 var okDatabase *diskv.Diskv
-var currentVersion string = "1.4.7"
+var currentVersion string = "1.4.8"
 
 func main() {
-	databasePath := "OkDatabase"
+	databasePath := ".OkDatabase"
 	userObject, errorObject := user.Current()
 	if errorObject != nil {
 		panic(errorObject)
@@ -65,7 +65,7 @@ func main() {
 		_, errorObject := os.Stat(databasePath)
 		if errorObject != nil {
 			if !strings.Contains(errorObject.Error(), "no such") {
-				databasePath = "OkDatabase"
+				databasePath = ".OkDatabase"
 			}
 		}
 	} else if runtime.GOOS == "windows" {
@@ -84,7 +84,7 @@ func main() {
 	okDatabase := diskv.New(diskv.Options{
 		BasePath:     databasePath,
 		Transform:    flatTransform,
-		CacheSizeMax: 1024 * 128,
+		CacheSizeMax: 1024 * 32,
 	})
 
 	arguments := os.Args[1:]
@@ -423,6 +423,8 @@ func main() {
 		if errorObject == nil {
 			currentCountInt64, _ := strconv.ParseInt(string(currentCountBytes), 10, 0)
 			currentCount = int(currentCountInt64)
+		} else {
+			fmt.Println("Error")
 		}
 		okDatabase.Write("DAY."+strconv.Itoa(currentDay), []byte(strconv.Itoa(currentCount+1)))
 
@@ -431,6 +433,8 @@ func main() {
 		if errorObject == nil {
 			currentCountInt64, _ := strconv.ParseInt(string(currentCountBytes), 10, 0)
 			currentCount = int(currentCountInt64)
+		} else {
+			fmt.Println("Error")
 		}
 		okDatabase.Write("counter", []byte(strconv.Itoa(currentCount+1)))
 

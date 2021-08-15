@@ -52,7 +52,7 @@ func reverseIntArray(array []int) []int {
 }
 
 var okDatabase *diskv.Diskv
-var currentVersion string = "1.4.8"
+var currentVersion string = "1.4.8.1"
 
 func main() {
 	databasePath := ".OkDatabase"
@@ -156,17 +156,15 @@ func main() {
 			responseBytes, errorObject := ioutil.ReadAll(httpResponse.Body)
 			if errorObject != nil {
 				fmt.Println("\rFailed to leave leaderboard...")
-				return
 			} else {
 				response = string(responseBytes)
+				if strings.HasPrefix(response, "ERROR.") {
+					errorName := strings.Split(response, "ERROR.")[1]
+					fmt.Println("\rError: " + errorName)
+				} else {
+					fmt.Println("\rSuccessfully removed player from leaderboard")
+				}
 			}
-			if strings.HasPrefix(response, "ERROR.") {
-				errorName := strings.Split(response, "ERROR.")[1]
-				fmt.Println("\rError: " + errorName)
-			} else {
-				fmt.Println("\rSuccessfully removed player from leaderboard")
-			}
-			return
 		}
 	} else if showVersion {
 		color.Printf("OK Version: <fg=white;op=bold;>%v</>\n", currentVersion)
@@ -303,7 +301,7 @@ func main() {
 		}
 	} else if showStatistics {
 		keyCount := 0
-		for _ = range okDatabase.Keys(make(chan struct{})) {
+		for range okDatabase.Keys(make(chan struct{})) {
 			keyCount++
 		}
 		if keyCount == 0 {
@@ -408,14 +406,11 @@ func main() {
 				} else {
 					fmt.Println("\nFailed to delete all values...\n" + errorObject.Error())
 				}
-				return
 			} else {
 				fmt.Println("\nOperation cancelled.")
-				return
 			}
 		} else {
 			fmt.Println("\nOperation cancelled.")
-			return
 		}
 	} else {
 		currentCount := 1

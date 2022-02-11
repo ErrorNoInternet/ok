@@ -18,8 +18,10 @@ Download `ok.exe` from the releases tab and copy it to any folder in `%PATH%` (f
 ## Installation (Android)
 Download `ok-aarch64` from v1.4.1-termux into your downloads folder and open Termux.
 ```sh
-cd && cp storage/downloads/ok-aarch64 ./ok
-chmod 777 ok && alias ok=./ok
+cd
+cp storage/downloads/ok-aarch64 ./ok
+chmod 777 ok
+alias ok=./ok
 ```
 
 --------------------

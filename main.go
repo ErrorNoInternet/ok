@@ -52,7 +52,7 @@ func reverseIntArray(array []int) []int {
 }
 
 var okDatabase *diskv.Diskv
-var currentVersion string = "1.4.8.1"
+var currentVersion string = "1.5.0"
 
 func main() {
 	databasePath := ".OkDatabase"
@@ -69,7 +69,7 @@ func main() {
 			}
 		}
 	} else if runtime.GOOS == "windows" {
-		databasePath = userObject.HomeDir + "\\OkDatabase"
+		databasePath = userObject.HomeDir + "\\.OkDatabase"
 	}
 
 	rand.Seed(time.Now().UnixNano())
@@ -147,7 +147,7 @@ func main() {
 			return
 		} else {
 			fmt.Printf("Leaving leaderboard...")
-			httpResponse, errorObject := http.Get(fmt.Sprintf("http://ok-server.herokuapp.com/remove/%v/%v", userInput, userPassword))
+			httpResponse, errorObject := http.Get(fmt.Sprintf("http://okserver.herokuapp.com/remove/%v/%v", userInput, userPassword))
 			if errorObject != nil {
 				fmt.Println("\rFailed to leave leaderboard...")
 				return
@@ -196,7 +196,7 @@ func main() {
 		return
 	} else if showPlayerList {
 		fmt.Print("Fetching leaderboard...")
-		httpResponse, errorObject := http.Get("http://ok-server.herokuapp.com/list")
+		httpResponse, errorObject := http.Get("http://okserver.herokuapp.com/list")
 		if errorObject != nil {
 			fmt.Println("\rFailed to fetch player list...")
 			return
@@ -236,7 +236,7 @@ func main() {
 		scanner.Scan()
 		message := scanner.Text()
 		fmt.Print("Sending message...")
-		_, errorObject := http.Get("http://ok-server.herokuapp.com/send/" + message)
+		_, errorObject := http.Get("http://okserver.herokuapp.com/send/" + message)
 		if errorObject != nil {
 			fmt.Println("\rFailed to send message...")
 		} else {
@@ -245,7 +245,7 @@ func main() {
 		return
 	} else if receiveMessage {
 		fmt.Printf("Fetching random message...")
-		httpResponse, errorObject := http.Get("http://ok-server.herokuapp.com/message")
+		httpResponse, errorObject := http.Get("http://okserver.herokuapp.com/message")
 		if errorObject != nil {
 			fmt.Println("\rFailed to get random message...")
 			return
@@ -283,7 +283,7 @@ func main() {
 				currentCountInt64, _ := strconv.ParseInt(string(currentCountBytes), 10, 0)
 				currentCount = int(currentCountInt64)
 			}
-			httpResponse, errorObject := http.Get(fmt.Sprintf("http://ok-server.herokuapp.com/submit/%v/%v/%v/%v", time.Now().Unix(), userInput, userPassword, currentCount))
+			httpResponse, errorObject := http.Get(fmt.Sprintf("http://okserver.herokuapp.com/submit/%v/%v/%v/%v", time.Now().Unix(), userInput, userPassword, currentCount))
 			if errorObject != nil {
 				fmt.Println("\rFailed to submit profile...")
 				return

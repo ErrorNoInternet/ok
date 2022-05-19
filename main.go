@@ -52,7 +52,7 @@ func reverseIntArray(array []int) []int {
 }
 
 var okDatabase *diskv.Diskv
-var currentVersion string = "1.5.0"
+var currentVersion string = "1.5.1"
 var firstRun bool
 
 func main() {
@@ -108,7 +108,7 @@ func main() {
 	leaveLeaderboard := false
 	extraText := ""
 	for _, argument := range arguments {
-		if argument == "stats" || argument == "statistics" {
+		if argument == "stats" || argument == "statistics" || argument == "status" {
 			showStatistics = true
 		} else if argument == "reset" {
 			resetValues = true
@@ -134,7 +134,7 @@ func main() {
 	}
 
 	if showHelpPage {
-		helpText := "<fg=white;op=bold;>ok</> - ok\n<fg=white;op=bold;>ok stats</> - shows your statistics\n<fg=white;op=bold;>ok reset</> - resets your statistics\n<fg=white;op=bold;>ok list</> - shows the OK leaderboard\n<fg=white;op=bold;>ok join</> - join the OK leaderboard\n<fg=white;op=bold;>ok leave</> - leave the OK leaderboard\n<fg=white;op=bold;>ok post</> - post a public message\n<fg=white;op=bold;>ok receive</> - receive a random message\n<fg=white;op=bold;>ok version</> - shows the OK version\n<fg=white;op=bold;>ok update</> - checks for OK updates\n"
+		helpText := "<fg=white;op=bold;>ok</> - ok\n<fg=white;op=bold;>ok status</> - shows your statistics\n<fg=white;op=bold;>ok reset</> - resets your statistics\n<fg=white;op=bold;>ok list</> - shows the OK leaderboard\n<fg=white;op=bold;>ok join</> - join the OK leaderboard\n<fg=white;op=bold;>ok leave</> - leave the OK leaderboard\n<fg=white;op=bold;>ok post</> - post a public message\n<fg=white;op=bold;>ok receive</> - receive a random message\n<fg=white;op=bold;>ok version</> - shows the OK version\n<fg=white;op=bold;>ok update</> - checks for OK updates\n"
 		color.Printf(helpText)
 	} else if leaveLeaderboard {
 		scanner := bufio.NewScanner(os.Stdin)
@@ -261,7 +261,7 @@ func main() {
 		responseBytes, _ := ioutil.ReadAll(httpResponse.Body)
 		response := string(responseBytes)
 		if strings.HasPrefix(response, "ERROR.") {
-			fmt.Println("\rNo one has sent any message...")
+			fmt.Println("\rNo one has sent a single message yet...")
 		} else {
 			color.Println("\r<fg=white;op=bold;>Here's a random message sent by someone:</>\n" + response)
 		}
@@ -278,10 +278,10 @@ func main() {
 			userPassword = string(userPasswordBytes)
 		}
 		if userInput == "" {
-			fmt.Println("Please enter a name!")
+			fmt.Println("Please enter a username!")
 			return
 		} else if userPassword == "" {
-			fmt.Println("Please enter a password!")
+			fmt.Println("Please enter a password (so that other people can't use your username)!")
 			return
 		} else {
 			fmt.Printf("Submitting profile...")

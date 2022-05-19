@@ -53,6 +53,7 @@ func reverseIntArray(array []int) []int {
 
 var okDatabase *diskv.Diskv
 var currentVersion string = "1.5.0"
+var firstRun bool
 
 func main() {
 	databasePath := ".OkDatabase"
@@ -86,6 +87,13 @@ func main() {
 		Transform:    flatTransform,
 		CacheSizeMax: 1024 * 32,
 	})
+	keyCount := 0
+	for range okDatabase.Keys(make(chan struct{})) {
+		keyCount++
+	}
+	if keyCount == 0 {
+		firstRun = true
+	}
 
 	arguments := os.Args[1:]
 	showStatistics := false
@@ -419,7 +427,9 @@ func main() {
 			currentCountInt64, _ := strconv.ParseInt(string(currentCountBytes), 10, 0)
 			currentCount = int(currentCountInt64)
 		} else {
-			fmt.Println("Error")
+			if !firstRun {
+				fmt.Println("Error")
+			}
 		}
 		okDatabase.Write("DAY."+strconv.Itoa(currentDay), []byte(strconv.Itoa(currentCount+1)))
 
@@ -429,24 +439,29 @@ func main() {
 			currentCountInt64, _ := strconv.ParseInt(string(currentCountBytes), 10, 0)
 			currentCount = int(currentCountInt64)
 		} else {
-			fmt.Println("Error")
+			if !firstRun {
+				fmt.Println("Error")
+			}
 		}
 		okDatabase.Write("counter", []byte(strconv.Itoa(currentCount+1)))
 
-		responses := []string{"ok", "ooka booka", "ok", "o k", "you said ok", "ok + 1", "ok = ok", "ok ok", "ok x69"}
+		if firstRun {
+			fmt.Println("welcome, my friend, to the land of OKs. here is your first OK:")
+		}
+		responses := []string{"ok", "ooka booka", "ok", "o k", "ok + 1", "ok = ok", "ok ok", "ok go brrr"}
 		randomIndex := rand.Intn(len(responses))
 		outputResponse := responses[randomIndex]
 		for _, letter := range outputResponse {
-			red := uint8(rand.Intn(214) + 42)
-			green := uint8(rand.Intn(214) + 42)
-			blue := uint8(rand.Intn(214) + 42)
+			red := uint8(rand.Intn(200) + 56)
+			green := uint8(rand.Intn(200) + 56)
+			blue := uint8(rand.Intn(200) + 56)
 			color.RGB(red, green, blue).Print(string(letter))
 		}
 		if extraText != "" {
 			for _, letter := range extraText {
-				red := uint8(rand.Intn(214) + 42)
-				green := uint8(rand.Intn(214) + 42)
-				blue := uint8(rand.Intn(214) + 42)
+				red := uint8(rand.Intn(200) + 56)
+				green := uint8(rand.Intn(200) + 56)
+				blue := uint8(rand.Intn(200) + 56)
 				color.RGB(red, green, blue).Print(string(letter))
 			}
 		}

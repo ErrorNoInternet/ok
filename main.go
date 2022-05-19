@@ -39,14 +39,14 @@ type githubRelease struct {
 
 func reverseArray(array []string) []string {
 	for index, counter := 0, len(array)-1; index < counter; index, counter = index+1, counter-1 {
-		array[index], array[counter] = array[counter], array[counter]
+		array[index], array[counter] = array[counter], array[index]
 	}
 	return array
 }
 
 func reverseIntArray(array []int) []int {
 	for index, counter := 0, len(array)-1; index < counter; index, counter = index+1, counter-1 {
-		array[index], array[counter] = array[counter], array[counter]
+		array[index], array[counter] = array[counter], array[index]
 	}
 	return array
 }
@@ -365,11 +365,7 @@ func main() {
 		heatmapOutput := ""
 		heatmapArray = reverseArray(heatmapArray)
 		for index, entry := range heatmapArray {
-			if index != 3 {
-				heatmapOutput += entry + ", "
-			} else {
-				break
-			}
+			heatmapOutput += fmt.Sprintf(" %v. %v\n", index+1, entry)
 		}
 		captionText := ""
 		for _, caption := range captionArray {
@@ -390,13 +386,10 @@ func main() {
 			todayCounter = int(todayCounterInt64)
 		}
 		graph := "Not enough OKs..."
-		if len(heatmapOutput) > 2 {
-			heatmapOutput = heatmapOutput[:len(heatmapOutput)-2]
-		}
 		if len(numberArray) > 0 {
 			graph = asciigraph.Plot(numberArray, asciigraph.Width(20), asciigraph.Height(10), asciigraph.Caption(captionText))
 		}
-		color.Printf("<fg=white;op=bold;>OK Counter:</> %v\n<fg=white;op=bold;>Records:</> %v\n<fg=white;op=bold;>Graph:</>\n%v\n\nYou've said OK <fg=white;op=bold;>%v times</> today\n", currentCount, heatmapOutput, graph, todayCounter)
+		color.Printf("<fg=white;op=bold;>OK Counter:</> %v\n<fg=white;op=bold;>Records:</>\n%v\n<fg=white;op=bold;>Graph:</>\n%v\n\nYou've said OK <fg=white;op=bold;>%v times</> today\n", currentCount, heatmapOutput[:len(heatmapOutput)-1], graph, todayCounter)
 	} else if resetValues {
 		scanner := bufio.NewScanner(os.Stdin)
 		color.Danger.Println("Are you sure you want to reset all values?")

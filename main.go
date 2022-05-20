@@ -419,10 +419,6 @@ func main() {
 		if errorObject == nil {
 			currentCountInt64, _ := strconv.ParseInt(string(currentCountBytes), 10, 0)
 			currentCount = int(currentCountInt64)
-		} else {
-			if !firstRun {
-				fmt.Println("Error")
-			}
 		}
 		okDatabase.Write("DAY."+strconv.Itoa(currentDay), []byte(strconv.Itoa(currentCount+1)))
 

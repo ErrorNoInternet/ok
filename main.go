@@ -365,7 +365,9 @@ func main() {
 		heatmapOutput := ""
 		heatmapArray = reverseArray(heatmapArray)
 		for index, entry := range heatmapArray {
-			heatmapOutput += fmt.Sprintf(" %v. %v\n", index+1, entry)
+			if index < 3 {
+				heatmapOutput += fmt.Sprintf(" %v. %v\n", index+1, entry)
+			}
 		}
 		captionText := ""
 		for _, caption := range captionArray {

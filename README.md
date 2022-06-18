@@ -27,3 +27,5 @@ alias ok=./ok
 --------------------
 
 Use `ok help` to get a list of commands
+
+<sub>If you would like to modify or use this repository (including its code) in your own project, please be sure to credit!</sub>

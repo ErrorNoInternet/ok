@@ -1,3 +1,3 @@
-fn main() {
-    println!("Hello, world!");
-}
+mod database;
+
+fn main() {}

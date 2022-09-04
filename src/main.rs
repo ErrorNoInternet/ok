@@ -7,12 +7,15 @@ use database::Database;
 use rand::Rng;
 
 fn main() {
-    let mut command = Command::new("ok").author("ErrorNoInternet").subcommand(
-        Command::new("statistics")
-            .about("See your OK statistics")
-            .alias("stats")
-            .alias("status"),
-    );
+    let mut command = Command::new("ok")
+        .author("ErrorNoInternet")
+        .version(env!("CARGO_PKG_VERSION"))
+        .subcommand(
+            Command::new("statistics")
+                .about("See your OK statistics")
+                .alias("stats")
+                .alias("status"),
+        );
     if cfg!(feature = "online") {
         command = command
             .clone()

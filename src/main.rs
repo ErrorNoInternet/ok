@@ -53,10 +53,9 @@ fn ok(db: &Database) {
         }
     };
     match db.set(String::from("counter"), (counter + 1).to_string()) {
-        Ok(_) => (),
+        Ok(_) => print_rainbow("ok"),
         Err(error) => println!("Uh oh! There was an error: {}", error),
     };
-    print_rainbow("ok");
 }
 
 fn print_rainbow(text: &str) {

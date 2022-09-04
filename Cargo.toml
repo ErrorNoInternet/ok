@@ -6,3 +6,7 @@ edition = "2021"
 [dependencies]
 clap = "3.2.20"
 whoami = "1.2.1"
+
+[features]
+online = []
+

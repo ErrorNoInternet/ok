@@ -2,11 +2,13 @@
 ok
 
 ## Installation
-
-### Pre-compiled
-Pre-compiled binaries are available [here](https://github.com/ErrorNoInternet/ok/releases)
+### Binaries
+Pre-compiled releases are available [here](https://github.com/ErrorNoInternet/ok/releases)
 
 ### Compiling
+- Requirements
+  - Rust (cargo)
+
 ```sh
 git clone https://github.com/ErrorNoInternet/ok
 cd ok

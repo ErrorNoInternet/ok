@@ -2,8 +2,8 @@
 ok
 
 ## Installation
-### Binaries
-Pre-compiled releases are available [here](https://github.com/ErrorNoInternet/ok/releases)
+### Releases
+Pre-compiled binaries are available [here](https://github.com/ErrorNoInternet/ok/releases)
 
 ### Compiling
 - Requirements

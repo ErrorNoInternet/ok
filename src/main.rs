@@ -113,7 +113,7 @@ fn print_rainbow(text: &str) {
 }
 
 fn load_database() -> Database {
-    let mut database_path = String::new();
+    let mut database_path = String::from(".ok");
     match std::env::var("OK_DB") {
         Ok(path) => database_path = path,
         Err(_) => {
@@ -121,8 +121,6 @@ fn load_database() -> Database {
                 database_path = format!("C:\\Users\\{}\\AppData\\Roaming\\ok", whoami::username())
             } else if cfg!(unix) {
                 database_path = format!("/home/{}/.config/ok", whoami::username())
-            } else {
-                database_path = String::from(".ok")
             }
         }
     }

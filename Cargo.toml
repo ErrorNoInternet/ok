@@ -10,5 +10,6 @@ rand = "0.8.5"
 whoami = "1.2.1"
 
 [features]
+default = ["online"]
 online = []
 

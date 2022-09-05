@@ -1,6 +1,7 @@
 mod commands;
 mod database;
 
+use chrono::Datelike;
 use clap::Command;
 use colored::Colorize;
 use database::Database;
@@ -42,6 +43,39 @@ fn main() {
 }
 
 fn ok(db: &Database) {
+    let current_time = chrono::Utc::now();
+    match db.get(String::from("last-ok")) {
+        Ok(time) => {
+            let last_ok_time: i64 = match time.parse() {
+                Ok(last_ok_time) => last_ok_time,
+                Err(_) => 0,
+            };
+            if current_time.timestamp() - last_ok_time < 3 {
+                println!(
+                    "{} You can only run ok once every 3 seconds!",
+                    "Slow down!".bold()
+                );
+                return;
+            }
+        }
+        Err(_) => (),
+    };
+    match db.set(
+        String::from("last-ok"),
+        current_time.timestamp().to_string(),
+    ) {
+        Ok(_) => (),
+        Err(error) => println!("Uh oh! There was an error: {}", error),
+    };
+
+    let current_day_key = format!("day.{}.{}", current_time.month(), current_time.day());
+    let day_counter: u128 = match db.get(current_day_key.clone()) {
+        Ok(day_counter) => match day_counter.parse() {
+            Ok(day_counter) => day_counter,
+            Err(_) => 0,
+        },
+        Err(_) => 0,
+    };
     let counter: u128 = match db.get(String::from("counter")) {
         Ok(counter) => match counter.parse() {
             Ok(counter) => counter,
@@ -52,6 +86,11 @@ fn ok(db: &Database) {
             0
         }
     };
+
+    match db.set(current_day_key, (day_counter + 1).to_string()) {
+        Ok(_) => (),
+        Err(error) => println!("Uh oh! There was an error: {}", error),
+    }
     match db.set(String::from("counter"), (counter + 1).to_string()) {
         Ok(_) => print_rainbow("ok"),
         Err(error) => println!("Uh oh! There was an error: {}", error),

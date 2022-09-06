@@ -88,13 +88,14 @@ fn ok(db: &Database) {
     };
 
     match db.set(current_day_key, (day_counter + 1).to_string()) {
-        Ok(_) => (),
+        Ok(_) => {
+            match db.set(String::from("counter"), (counter + 1).to_string()) {
+                Ok(_) => print_rainbow("ok"),
+                Err(error) => println!("Uh oh! There was an error: {}", error),
+            };
+        }
         Err(error) => println!("Uh oh! There was an error: {}", error),
     }
-    match db.set(String::from("counter"), (counter + 1).to_string()) {
-        Ok(_) => print_rainbow("ok"),
-        Err(error) => println!("Uh oh! There was an error: {}", error),
-    };
 }
 
 fn print_rainbow(text: &str) {

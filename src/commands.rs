@@ -1,7 +1,7 @@
 use crate::database::Database;
 use chrono::{Datelike, TimeZone};
 use colored::Colorize;
-use std::{borrow::Borrow, ops::Index};
+use std::ops::Index;
 
 pub fn statistics_command(db: &Database) {
     let mut records = Vec::new();
@@ -79,15 +79,12 @@ pub fn statistics_command(db: &Database) {
             keys.remove(keys.iter().position(|x| *x == highest.0).unwrap());
         }
     }
-    for record in records {
-        println!("{}", record);
-    }
 }
 
-pub fn leaderboard_join_command(db: &Database) {
+pub fn leaderboard_join_command(_db: &Database) {
     println!("not implemented");
 }
 
-pub fn leaderboard_leave_command(db: &Database) {
+pub fn leaderboard_leave_command(_db: &Database) {
     println!("not implemented");
 }

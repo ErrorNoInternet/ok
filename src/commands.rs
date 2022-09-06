@@ -1,7 +1,7 @@
-use std::ops::Index;
-
 use crate::database::Database;
+use chrono::{Datelike, TimeZone};
 use colored::Colorize;
+use std::{borrow::Borrow, ops::Index};
 
 pub fn statistics_command(db: &Database) {
     let mut records = Vec::new();
@@ -12,7 +12,7 @@ pub fn statistics_command(db: &Database) {
             return;
         }
     };
-    for i in 0..3 {
+    for _ in 0..3 {
         let mut highest: (String, u128) = (String::new(), 0);
         for key in &keys {
             if key.starts_with("day.") {
@@ -37,15 +37,42 @@ pub fn statistics_command(db: &Database) {
             }
         }
         if !highest.0.is_empty() {
-            let month = highest.0.split(".").collect::<Vec<&str>>().index(1).clone();
-            let day = highest.0.split(".").collect::<Vec<&str>>().index(2).clone();
+            let month = match highest
+                .0
+                .split(".")
+                .collect::<Vec<&str>>()
+                .index(1)
+                .clone()
+                .parse()
+            {
+                Ok(month) => month,
+                Err(error) => {
+                    println!("Uh oh! There was an error: {}", error);
+                    return;
+                }
+            };
+            let day = match highest
+                .0
+                .split(".")
+                .collect::<Vec<&str>>()
+                .index(2)
+                .clone()
+                .parse()
+            {
+                Ok(day) => day,
+                Err(error) => {
+                    println!("Uh oh! There was an error: {}", error);
+                    return;
+                }
+            };
+            let record_time = chrono::Local.ymd(chrono::Local::now().year(), month, day);
             let mut label = "OKs";
             if highest.1 == 1 {
                 label = "OK"
             }
             records.push(format!(
                 "{} {} {}",
-                format!("{}/{}:", month, day).bold(),
+                record_time.format("%B %d:").to_string().bold(),
                 highest.1,
                 label
             ));

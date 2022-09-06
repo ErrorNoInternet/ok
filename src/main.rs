@@ -43,7 +43,7 @@ fn main() {
 }
 
 fn ok(db: &Database) {
-    let current_time = chrono::Utc::now();
+    let current_time = chrono::Local::now();
     match db.get(String::from("last-ok")) {
         Ok(time) => {
             let last_ok_time: i64 = match time.parse() {

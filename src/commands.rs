@@ -159,8 +159,28 @@ pub fn statistics_command(db: &Database) {
     println!("{}", "OK Graph:".bold());
     let mut lines = chart.split("\n").collect::<Vec<&str>>();
     lines.remove(lines.len() - 1);
-    for line in &lines {
+    let mut index = 0;
+    for line in lines.clone().iter_mut() {
+        if index == 0 || index == lines.len() - 1 {
+            let mut line_index = line.len() - 1;
+            let mut character = match line.chars().collect::<Vec<char>>().iter().nth(line_index) {
+                Some(character) => character.to_owned(),
+                None => ' ',
+            };
+            while character != '.' {
+                line_index -= 1;
+                character = match line.chars().collect::<Vec<char>>().iter().nth(line_index) {
+                    Some(character) => character.to_owned(),
+                    None => ' ',
+                };
+                match &line.strip_suffix(character) {
+                    Some(new_line) => *line = new_line,
+                    None => (),
+                }
+            }
+        }
         println!("  {}", line);
+        index += 1;
     }
 
     let mut graph_bottom_text = String::new();

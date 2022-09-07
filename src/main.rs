@@ -69,14 +69,14 @@ fn ok(db: &Database) {
     };
 
     let current_day_key = format!("day.{}.{}", current_time.month(), current_time.day());
-    let day_counter: u128 = match db.get(current_day_key.clone()) {
+    let day_counter: i64 = match db.get(current_day_key.clone()) {
         Ok(day_counter) => match day_counter.parse() {
             Ok(day_counter) => day_counter,
             Err(_) => 0,
         },
         Err(_) => 0,
     };
-    let counter: u128 = match db.get(String::from("counter")) {
+    let counter: i64 = match db.get(String::from("counter")) {
         Ok(counter) => match counter.parse() {
             Ok(counter) => counter,
             Err(_) => 0,

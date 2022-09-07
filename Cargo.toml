@@ -8,6 +8,7 @@ chrono = "0.4.22"
 clap = "3.2.20"
 colored = "2.0.0"
 rand = "0.8.5"
+textplots = "0.8.0"
 whoami = "1.2.1"
 
 [features]

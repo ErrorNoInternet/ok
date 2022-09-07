@@ -6,7 +6,7 @@ use textplots::{Chart, Plot, Shape};
 
 pub fn statistics_command(db: &Database) {
     let graph_history_days: u32 = 5;
-    let graph_width = 100;
+    let graph_width = 110;
     let graph_height = 32;
     let graph_smoothness = 10;
     let date_format = match std::env::var("OK_DATE") {

@@ -157,7 +157,8 @@ pub fn statistics_command(db: &Database) {
         .trim()
         .to_owned();
     println!("{}", "OK Graph:".bold());
-    let lines = chart.split("\n").collect::<Vec<&str>>();
+    let mut lines = chart.split("\n").collect::<Vec<&str>>();
+    lines.remove(lines.len() - 1);
     for line in &lines {
         println!("  {}", line);
     }

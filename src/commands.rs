@@ -1,8 +1,51 @@
 use crate::database::Database;
 use chrono::{Datelike, TimeZone};
 use colored::Colorize;
-use std::ops::Index;
+use std::{io::Write, ops::Index};
 use textplots::{Chart, Plot, Shape};
+
+pub fn reset_command(db: &Database) {
+    print!(
+        "{} {} ",
+        "Are you sure you want to reset your OK statistics?",
+        "Y/N:".bold()
+    );
+    std::io::stdout().flush().unwrap();
+    let mut input = String::new();
+    std::io::stdin().read_line(&mut input).unwrap();
+    if input.len() >= 1 {
+        let letter = input.chars().nth(0).unwrap().to_lowercase().to_string();
+        if letter == String::from("y") {
+            print!(
+                "{} {} ",
+                "Are you very sure you want to reset your OK statistics?".red(),
+                "Y/N:".bold().red()
+            );
+            std::io::stdout().flush().unwrap();
+            let mut input = String::new();
+            std::io::stdin().read_line(&mut input).unwrap();
+            if input.len() >= 1 {
+                let letter = input.chars().nth(0).unwrap().to_lowercase().to_string();
+                if letter == String::from("y") {
+                    let keys = match db.keys() {
+                        Ok(keys) => keys,
+                        Err(error) => {
+                            println!("Uh oh! There was an error: {}", error);
+                            return;
+                        }
+                    };
+                    for key in keys {
+                        match db.delete(key.clone()) {
+                            Ok(_) => (),
+                            Err(error) => println!("Unable to delete key ({}): {}", key, error),
+                        }
+                    }
+                    println!("{}", "Your OK statistics have been reset!".bold());
+                }
+            }
+        }
+    }
+}
 
 pub fn statistics_command(db: &Database) {
     let graph_history_days: u32 = 5;

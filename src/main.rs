@@ -11,6 +11,7 @@ fn main() {
     let mut command = Command::new("ok")
         .author("ErrorNoInternet")
         .version(env!("CARGO_PKG_VERSION"))
+        .subcommand(Command::new("reset").about("Reset all of your OK statistics"))
         .subcommand(
             Command::new("statistics")
                 .about("See your OK statistics")
@@ -29,6 +30,9 @@ fn main() {
     }
 
     match command.get_matches().subcommand() {
+        Some(("reset", _)) => {
+            commands::reset_command(&load_database());
+        }
         Some(("statistics", _)) => {
             commands::statistics_command(&load_database());
         }

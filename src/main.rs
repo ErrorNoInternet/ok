@@ -52,8 +52,9 @@ fn ok(db: &Database) {
             };
             if current_time.timestamp() - last_ok_time < 3 {
                 println!(
-                    "{} You can only run ok once every 3 seconds!",
-                    "Slow down!".bold()
+                    "{} You can only run {} once every 3 seconds!",
+                    "Slow down!".bold(),
+                    "ok".bold(),
                 );
                 return;
             }

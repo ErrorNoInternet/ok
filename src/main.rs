@@ -21,13 +21,23 @@ fn main() {
     if cfg!(feature = "online") {
         command = command
             .clone()
-            .subcommand(Command::new("list").about("List the OK leaderboard"))
+            .subcommand(
+                Command::new("list")
+                    .about("List the OK leaderboard")
+                    .alias("leaderboard")
+                    .alias("leader")
+                    .alias("lb"),
+            )
             .subcommand(
                 Command::new("join")
                     .about("Join the OK leaderboard")
                     .alias("submit"),
             )
-            .subcommand(Command::new("leave").about("Leave the OK leaderboard"));
+            .subcommand(
+                Command::new("leave")
+                    .about("Leave the OK leaderboard")
+                    .alias("quit"),
+            );
     }
 
     match command.get_matches().subcommand() {

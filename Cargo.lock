@@ -298,7 +298,6 @@ version = "2.0.0-alpha"
 dependencies = [
  "chrono",
  "clap 3.2.20",
- "colored",
  "console",
  "rand",
  "textplots",

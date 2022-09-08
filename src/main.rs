@@ -3,7 +3,7 @@ mod database;
 
 use chrono::Datelike;
 use clap::Command;
-use colored::Colorize;
+use console::style;
 use database::Database;
 use rand::Rng;
 
@@ -71,8 +71,8 @@ fn ok(db: &Database) {
             if current_time.timestamp() - last_ok_time < 3 {
                 println!(
                     "{} You can only run {} once every 3 seconds!",
-                    "Slow down!".bold(),
-                    "ok".bold(),
+                    style("Slow down!").bold(),
+                    style("ok").bold(),
                 );
                 return;
             }
@@ -120,13 +120,15 @@ fn ok(db: &Database) {
 fn print_rainbow(text: &str) {
     let mut generator = rand::thread_rng();
     for letter in text.chars() {
+        let (r, g, b): (i32, i32, i32) = (
+            generator.gen_range(150..=255),
+            generator.gen_range(150..=255),
+            generator.gen_range(150..=255),
+        );
         print!(
             "{}",
-            letter.to_string().truecolor(
-                generator.gen_range(100..=255),
-                generator.gen_range(100..=255),
-                generator.gen_range(100..=255)
-            )
+            style(letter.to_string())
+                .color256(((r * 6 / 256) * 36 + (g * 6 / 256) * 6 + (b * 6 / 256)) as u8)
         )
     }
     println!();

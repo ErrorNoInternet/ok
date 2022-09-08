@@ -1,7 +1,6 @@
 use crate::database::Database;
 use chrono::{Datelike, TimeZone};
-use colored::Colorize;
-use console::Term;
+use console::{style, Term};
 use std::{io::Write, ops::Index};
 use textplots::{Chart, Plot, Shape};
 
@@ -10,7 +9,7 @@ pub fn reset_command(db: &Database) {
     print!(
         "{} {} ",
         "Are you sure you want to reset your OK statistics?",
-        "Y/N:".bold()
+        style("Y/N:").bold()
     );
     std::io::stdout().flush().unwrap();
     let letter = match terminal.read_char() {
@@ -21,8 +20,8 @@ pub fn reset_command(db: &Database) {
     if letter == 'y' {
         print!(
             "{} {} ",
-            "Are you very sure you want to reset your OK statistics?".red(),
-            "Y/N:".bold().red()
+            style("Are you very sure you want to reset your OK statistics?").red(),
+            style("Y/N:").bold().red()
         );
         std::io::stdout().flush().unwrap();
         let letter = match terminal.read_char() {
@@ -44,7 +43,7 @@ pub fn reset_command(db: &Database) {
                     Err(error) => println!("Unable to delete key ({}): {}", key, error),
                 }
             }
-            println!("{}", "Your OK statistics have been reset!".bold());
+            println!("{}", style("Your OK statistics have been reset!").bold());
         }
     }
 }
@@ -73,8 +72,8 @@ pub fn statistics_command(db: &Database) {
     };
     println!(
         "{} {}",
-        "OKs Today:".bold(),
-        current_day_counter.to_string().blue()
+        style("OKs Today:").bold(),
+        style(current_day_counter.to_string()).blue()
     );
     let counter: i64 = match db.get(String::from("counter")) {
         Ok(counter) => match counter.parse() {
@@ -83,7 +82,11 @@ pub fn statistics_command(db: &Database) {
         },
         Err(_) => 0,
     };
-    println!("{} {}", "OK Counter:".bold(), counter.to_string().blue());
+    println!(
+        "{} {}",
+        style("OK Counter:").bold(),
+        style(counter.to_string()).blue()
+    );
 
     let mut keys = match db.keys() {
         Ok(keys) => keys,
@@ -93,7 +96,7 @@ pub fn statistics_command(db: &Database) {
         }
     };
     if keys.len() > 0 {
-        println!("{}", "OK Records:".bold());
+        println!("{}", style("OK Records:").bold());
         for i in 0..3 {
             let mut highest: (String, i64) = (String::new(), 0);
             for key in &keys {
@@ -154,9 +157,9 @@ pub fn statistics_command(db: &Database) {
                 }
                 println!(
                     "  {}. {} {} {}",
-                    (i + 1).to_string().bold().blue(),
-                    (record_time.format(&date_format).to_string() + " -").bold(),
-                    (highest.1).to_string().blue(),
+                    style((i + 1).to_string()).bold().blue(),
+                    style(record_time.format(&date_format).to_string() + " -").bold(),
+                    style((highest.1).to_string()).blue(),
                     label
                 );
                 keys.remove(keys.iter().position(|x| *x == highest.0).unwrap());
@@ -208,7 +211,7 @@ pub fn statistics_command(db: &Database) {
         lines.push(line.to_string());
     }
 
-    println!("{}", "OK Graph:".bold());
+    println!("{}", style("OK Graph:").bold());
     let mut index = 0;
     for line in lines.clone().iter_mut() {
         let first_character = match line.chars().collect::<Vec<char>>().iter().nth(0) {
@@ -261,11 +264,15 @@ pub fn statistics_command(db: &Database) {
                 - 1,
         ))
     }
-    println!("   {}", graph_bottom_text.bold());
+    println!("   {}", style(graph_bottom_text).bold());
 }
 
 pub fn leaderboard_list_command(_db: &Database) {
-    println!("not implemented");
+    let terminal = Term::stdout();
+    terminal.write_line("Fetching leaderboard...").unwrap();
+    std::thread::sleep(std::time::Duration::from_secs(2));
+    terminal.clear_line().unwrap();
+    terminal.write_line("WHAT").unwrap();
 }
 
 pub fn leaderboard_join_command(_db: &Database) {

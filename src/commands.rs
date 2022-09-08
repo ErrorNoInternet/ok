@@ -8,7 +8,7 @@ pub fn statistics_command(db: &Database) {
     let graph_history_days: u32 = 5;
     let graph_width = 110;
     let graph_height = 32;
-    let graph_smoothness = 10;
+    let graph_smoothness = 20;
     let date_format = match std::env::var("OK_DATE") {
         Ok(date_format) => date_format,
         Err(_) => String::from("%b %d"),
@@ -156,13 +156,27 @@ pub fn statistics_command(db: &Database) {
         .to_string()
         .trim()
         .to_owned();
+    let mut str_lines = chart.split("\n").collect::<Vec<&str>>();
+    str_lines.remove(str_lines.len() - 1);
+    let mut lines = Vec::new();
+    for line in str_lines {
+        lines.push(line.to_string());
+    }
+
     println!("{}", "OK Graph:".bold());
-    let mut lines = chart.split("\n").collect::<Vec<&str>>();
-    lines.remove(lines.len() - 1);
     let mut index = 0;
     for line in lines.clone().iter_mut() {
+        let first_character = match line.chars().collect::<Vec<char>>().iter().nth(0) {
+            Some(character) => character.to_owned(),
+            None => ' ',
+        };
+        match &line.strip_prefix(first_character) {
+            Some(new_line) => *line = new_line.to_string(),
+            None => (),
+        };
+
         if index == 0 || index == lines.len() - 1 {
-            let mut line_index = line.len() - 1;
+            let mut line_index = line.chars().count();
             let mut character = match line.chars().collect::<Vec<char>>().iter().nth(line_index) {
                 Some(character) => character.to_owned(),
                 None => ' ',
@@ -174,12 +188,19 @@ pub fn statistics_command(db: &Database) {
                     None => ' ',
                 };
                 match &line.strip_suffix(character) {
-                    Some(new_line) => *line = new_line,
+                    Some(new_line) => *line = new_line.to_string(),
                     None => (),
                 }
             }
+            while line.chars().count() < lines.index(1).chars().count() + 3 {
+                line.insert(line.len() - 2, ' ')
+            }
+        } else {
+            line.push_str("    ");
+            line.replace_range(line.len() - 1..line.len(), "|");
         }
-        println!("  {}", line);
+
+        println!("  |{}", line);
         index += 1;
     }
 
@@ -190,12 +211,12 @@ pub fn statistics_command(db: &Database) {
         let date = current_time.format(&date_format).to_string();
         graph_bottom_text.push_str(&date);
         graph_bottom_text.push_str(&" ".repeat(
-            (((graph_width as f32 * 0.7 - (graph_width as f32 / 25.0)) as u32 / graph_history_days)
+            (((graph_width as f32 * 0.7 - (graph_width as f32 / 20.0)) as u32 / graph_history_days)
                 - date.len() as u32) as usize
                 - 1,
         ))
     }
-    println!("  {}", graph_bottom_text.bold());
+    println!("   {}", graph_bottom_text.bold());
 }
 
 pub fn leaderboard_join_command(_db: &Database) {

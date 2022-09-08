@@ -268,11 +268,8 @@ pub fn statistics_command(db: &Database) {
 }
 
 pub fn leaderboard_list_command(_db: &Database) {
-    let terminal = Term::stdout();
-    terminal.write_line("Fetching leaderboard...").unwrap();
-    std::thread::sleep(std::time::Duration::from_secs(2));
-    terminal.clear_line().unwrap();
-    terminal.write_line("WHAT").unwrap();
+    print!("Fetching leaderboard...");
+    std::io::stdout().flush().unwrap();
 }
 
 pub fn leaderboard_join_command(_db: &Database) {

@@ -21,6 +21,7 @@ fn main() {
     if cfg!(feature = "online") {
         command = command
             .clone()
+            .subcommand(Command::new("list").about("List the OK leaderboard"))
             .subcommand(
                 Command::new("join")
                     .about("Join the OK leaderboard")
@@ -35,6 +36,9 @@ fn main() {
         }
         Some(("statistics", _)) => {
             commands::statistics_command(&load_database());
+        }
+        Some(("list", _)) => {
+            commands::leaderboard_list_command(&load_database());
         }
         Some(("join", _)) => {
             commands::leaderboard_join_command(&load_database());

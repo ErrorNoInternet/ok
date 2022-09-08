@@ -262,6 +262,10 @@ pub fn statistics_command(db: &Database) {
     println!("   {}", graph_bottom_text.bold());
 }
 
+pub fn leaderboard_list_command(_db: &Database) {
+    println!("not implemented");
+}
+
 pub fn leaderboard_join_command(_db: &Database) {
     println!("not implemented");
 }

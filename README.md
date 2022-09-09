@@ -1,6 +1,8 @@
 # ok
 This is a command that simply prints "ok" onto your screen whenever you run the `ok` command
 
+`ok` 2.0 is in development! The new version will be written in Rust, however the database (and server) will not be backwards-compatible.
+
 ![Screenshot](https://raw.githubusercontent.com/ErrorNoInternet/ok/main/ok.png)
 
 --------------------

@@ -11,10 +11,10 @@ fn main() {
     let command = Command::new("ok")
         .author("ErrorNoInternet")
         .version(env!("CARGO_PKG_VERSION"))
-        .subcommand(Command::new("reset").about("Reset all of your OK statistics"))
+        .subcommand(Command::new("reset").about("Reset your OK statistics"))
         .subcommand(
             Command::new("statistics")
-                .about("See your OK statistics")
+                .about("Display your OK statistics")
                 .alias("stats")
                 .alias("status"),
         );

@@ -1,6 +1,4 @@
 # ok
-ok
-
 ![Screenshot](./screenshots/0.png)
 
 ## Installation

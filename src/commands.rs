@@ -1,8 +1,21 @@
 use crate::database::Database;
 use chrono::{Datelike, TimeZone};
 use console::{style, Term};
+use serde::Deserialize;
 use std::{io::Write, ops::Index};
 use textplots::{Chart, Plot, Shape};
+
+#[derive(Deserialize)]
+struct ApiLeaderboardPlayer {
+    name: String,
+    score: i64,
+}
+
+#[derive(Deserialize)]
+struct ApiLeaderboard {
+    count: i32,
+    players: Vec<ApiLeaderboardPlayer>,
+}
 
 pub fn reset_command(db: &Database) {
     let terminal = Term::stdout();
@@ -268,8 +281,44 @@ pub fn statistics_command(db: &Database) {
 }
 
 pub fn leaderboard_list_command(_db: &Database) {
-    print!("Fetching leaderboard...");
+    print!("Fetching leaderboard...\r");
     std::io::stdout().flush().unwrap();
+
+    let raw_response = match reqwest::blocking::get("https://okserver.herokuapp.com/list") {
+        Ok(raw_response) => raw_response.text().unwrap(),
+        Err(error) => {
+            println!("Uh oh! There was an error: {}", error);
+            return;
+        }
+    };
+    let response: ApiLeaderboard = match serde_json::from_str(&raw_response) {
+        Ok(response) => response,
+        Err(error) => {
+            println!("Uh oh! There was an error: {}", error);
+            return;
+        }
+    };
+
+    if response.count > 0 {
+        println!("{}", style("OK Leaderboard:").bold());
+        let mut counter = 0;
+        for user in response.players {
+            let mut label = "OKs";
+            if user.score == 1 {
+                label = "OK";
+            }
+            println!(
+                "{} {} {} {}",
+                style(format!("{}.", counter + 1)).bold().blue(),
+                style(format!("{}:", user.name)).bold(),
+                user.score,
+                label,
+            );
+            counter += 1;
+        }
+    } else {
+        println!("There is no one on the OK leaderboard...")
+    }
 }
 
 pub fn leaderboard_join_command(_db: &Database) {

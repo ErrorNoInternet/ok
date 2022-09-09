@@ -1,6 +1,8 @@
 # ok
 ok
 
+![Screenshot](./screenshots/0.png)
+
 ## Installation
 ### Releases
 Pre-compiled binaries are available [here](https://github.com/ErrorNoInternet/ok/releases)

@@ -1,0 +1,13 @@
+[package]
+name = "ok"
+version = "2.0.0-alpha"
+edition = "2021"
+
+[dependencies]
+chrono = "0.4.22"
+clap = "3.2.20"
+console = "0.15.1"
+rand = "0.8.5"
+textplots = "0.8.0"
+whoami = "1.2.1"
+

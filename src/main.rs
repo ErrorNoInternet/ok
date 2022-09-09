@@ -2,13 +2,13 @@ mod commands;
 mod database;
 
 use chrono::Datelike;
-use clap::{Arg, Command};
+use clap::Command;
 use console::style;
 use database::Database;
 use rand::Rng;
 
 fn main() {
-    let mut command = Command::new("ok")
+    let command = Command::new("ok")
         .author("ErrorNoInternet")
         .version(env!("CARGO_PKG_VERSION"))
         .subcommand(Command::new("reset").about("Reset all of your OK statistics"))
@@ -18,41 +18,6 @@ fn main() {
                 .alias("stats")
                 .alias("status"),
         );
-    if cfg!(feature = "online") {
-        command = command
-            .clone()
-            .subcommand(
-                Command::new("list")
-                    .about("List the OK leaderboard")
-                    .alias("leaderboard")
-                    .alias("leader")
-                    .alias("lb"),
-            )
-            .subcommand(
-                Command::new("join")
-                    .about("Join the OK leaderboard")
-                    .alias("submit")
-                    .arg(
-                        Arg::new("name")
-                            .long("name")
-                            .takes_value(true)
-                            .required(true),
-                    )
-                    .arg(Arg::new("key").long("key").takes_value(true).required(true)),
-            )
-            .subcommand(
-                Command::new("leave")
-                    .about("Leave the OK leaderboard")
-                    .alias("quit")
-                    .arg(
-                        Arg::new("name")
-                            .long("name")
-                            .takes_value(true)
-                            .required(true),
-                    )
-                    .arg(Arg::new("key").long("key").takes_value(true).required(true)),
-            );
-    }
 
     match command.get_matches().subcommand() {
         Some(("reset", _)) => {
@@ -60,19 +25,6 @@ fn main() {
         }
         Some(("statistics", _)) => {
             commands::statistics_command(&load_database());
-        }
-        Some(("list", _)) => {
-            commands::leaderboard_list_command(&load_database());
-        }
-        Some(("join", matches)) => {
-            commands::leaderboard_join_command(
-                &load_database(),
-                matches.value_of("name").unwrap().to_string(),
-                matches.value_of("key").unwrap().to_string(),
-            );
-        }
-        Some(("leave", _)) => {
-            commands::leaderboard_leave_command(&load_database());
         }
         _ => ok(&load_database()),
     }

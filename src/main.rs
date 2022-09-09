@@ -2,7 +2,7 @@ mod commands;
 mod database;
 
 use chrono::Datelike;
-use clap::Command;
+use clap::{Arg, Command};
 use console::style;
 use database::Database;
 use rand::Rng;
@@ -31,12 +31,26 @@ fn main() {
             .subcommand(
                 Command::new("join")
                     .about("Join the OK leaderboard")
-                    .alias("submit"),
+                    .alias("submit")
+                    .arg(
+                        Arg::new("name")
+                            .long("name")
+                            .takes_value(true)
+                            .required(true),
+                    )
+                    .arg(Arg::new("key").long("key").takes_value(true).required(true)),
             )
             .subcommand(
                 Command::new("leave")
                     .about("Leave the OK leaderboard")
-                    .alias("quit"),
+                    .alias("quit")
+                    .arg(
+                        Arg::new("name")
+                            .long("name")
+                            .takes_value(true)
+                            .required(true),
+                    )
+                    .arg(Arg::new("key").long("key").takes_value(true).required(true)),
             );
     }
 
@@ -50,8 +64,12 @@ fn main() {
         Some(("list", _)) => {
             commands::leaderboard_list_command(&load_database());
         }
-        Some(("join", _)) => {
-            commands::leaderboard_join_command(&load_database());
+        Some(("join", matches)) => {
+            commands::leaderboard_join_command(
+                &load_database(),
+                matches.value_of("name").unwrap().to_string(),
+                matches.value_of("key").unwrap().to_string(),
+            );
         }
         Some(("leave", _)) => {
             commands::leaderboard_leave_command(&load_database());

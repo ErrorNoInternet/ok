@@ -321,9 +321,7 @@ pub fn leaderboard_list_command(_db: &Database) {
     }
 }
 
-pub fn leaderboard_join_command(_db: &Database) {
-    println!("not implemented");
-}
+pub fn leaderboard_join_command(db: &Database, name: String, key: String) {}
 
 pub fn leaderboard_leave_command(_db: &Database) {
     println!("not implemented");

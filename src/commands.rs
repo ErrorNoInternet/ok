@@ -52,7 +52,7 @@ pub fn statistics_command(db: &Database) {
     let graph_history_days: u32 = 5;
     let graph_width = 110;
     let graph_height = 32;
-    let graph_smoothness = 20;
+    let graph_smoothness = 10;
     let date_format = match std::env::var("OK_DATE") {
         Ok(date_format) => date_format,
         Err(_) => String::from("%b %d"),

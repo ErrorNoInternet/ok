@@ -90,15 +90,15 @@ fn ok(db: &Database) {
 fn print_rainbow(text: &str) {
     let mut generator = rand::thread_rng();
     for letter in text.chars() {
-        let (r, g, b): (i32, i32, i32) = (
-            generator.gen_range(150..=255),
-            generator.gen_range(150..=255),
-            generator.gen_range(150..=255),
+        let (red, green, blue): (i32, i32, i32) = (
+            generator.gen_range(127..=255),
+            generator.gen_range(127..=255),
+            generator.gen_range(127..=255),
         );
         print!(
             "{}",
             style(letter.to_string())
-                .color256(((r * 6 / 256) * 36 + (g * 6 / 256) * 6 + (b * 6 / 256)) as u8)
+                .color256(((red / 32) << 5) as u8 + ((green / 32) << 2) as u8 + (blue / 64) as u8)
         )
     }
     println!();

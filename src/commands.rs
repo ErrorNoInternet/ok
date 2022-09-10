@@ -193,7 +193,7 @@ pub fn statistics_command(db: &Database) {
         };
 
         let difference = (next_day_counter - current_day_counter) as f32 / graph_smoothness as f32;
-        for i in 0..graph_smoothness {
+        for i in 1..graph_smoothness + 1 {
             data.push(current_day_counter as f32 + i as f32 * difference);
         }
     }

@@ -150,7 +150,9 @@ pub fn statistics_command(db: &Database) {
                         return;
                     }
                 };
-                let record_time = chrono::Local.ymd(chrono::Local::now().year(), month, day);
+                let record_time = chrono::Local
+                    .with_ymd_and_hms(chrono::Local::now().year(), month, day, 0, 0, 0)
+                    .unwrap();
                 let mut label = "OKs";
                 if highest.1 == 1 {
                     label = "OK"

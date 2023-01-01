@@ -183,7 +183,8 @@ pub fn statistics_command(db: &Database) {
             },
             Err(_) => 0,
         };
-        let next_day_key = format!("day.{}.{}", current_time.month(), current_time.day() + 1);
+        let next_day = current_time + chrono::Duration::days(1);
+        let next_day_key = format!("day.{}.{}", next_day.month(), next_day.day());
         let next_day_counter: i64 = match db.get(next_day_key.clone()) {
             Ok(next_day_counter) => match next_day_counter.parse() {
                 Ok(next_day_counter) => next_day_counter,

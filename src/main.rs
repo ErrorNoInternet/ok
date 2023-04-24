@@ -6,6 +6,7 @@ use clap::Command;
 use console::style;
 use database::Database;
 use rand::Rng;
+use std::path::PathBuf;
 
 fn main() {
     let command = Command::new("ok")
@@ -105,16 +106,25 @@ fn print_rainbow(text: &str) {
 }
 
 fn load_database() -> Database {
-    let mut database_path = String::from(".ok");
+    let mut database_path = PathBuf::from(".ok");
     match std::env::var("OK_DB") {
-        Ok(path) => database_path = path,
+        Ok(path) => database_path = path.into(),
         Err(_) => {
             if cfg!(windows) {
-                database_path = format!("C:\\Users\\{}\\AppData\\Roaming\\ok", whoami::username())
+                match home::home_dir() {
+                    Some(home_directory) => {
+                        database_path = home_directory.join("AppData/Roaming/ok")
+                    }
+                    None => (),
+                }
             } else if cfg!(unix) {
-                database_path = format!("/home/{}/.config/ok", whoami::username())
+                match home::home_dir() {
+                    Some(home_directory) => database_path = home_directory.join(".config/ok"),
+                    None => (),
+                }
             }
         }
     }
-    Database::open(database_path).unwrap()
+
+    Database::open(database_path.to_str().unwrap().to_string()).unwrap()
 }

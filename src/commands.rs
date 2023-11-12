@@ -122,28 +122,14 @@ pub fn statistics_command(db: &Database) {
                 }
             }
             if !highest.0.is_empty() {
-                let month = match highest
-                    .0
-                    .split(".")
-                    .collect::<Vec<&str>>()
-                    .index(1)
-                    .clone()
-                    .parse()
-                {
+                let month = match highest.0.split(".").collect::<Vec<&str>>().index(1).parse() {
                     Ok(month) => month,
                     Err(error) => {
                         println!("Uh oh! There was an error: {}", error);
                         return;
                     }
                 };
-                let day = match highest
-                    .0
-                    .split(".")
-                    .collect::<Vec<&str>>()
-                    .index(2)
-                    .clone()
-                    .parse()
-                {
+                let day = match highest.0.split(".").collect::<Vec<&str>>().index(2).parse() {
                     Ok(day) => day,
                     Err(error) => {
                         println!("Uh oh! There was an error: {}", error);
